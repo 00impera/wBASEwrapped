@@ -70,29 +70,13 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   background:linear-gradient(135deg,rgba(255,255,255,0.08) 0%,transparent 50%);
   pointer-events:none;
 }
-.glass-btn::after{
-  content:'';position:absolute;top:50%;left:50%;
-  width:0;height:0;border-radius:50%;
-  background:rgba(0,238,255,0.2);
-  transform:translate(-50%,-50%);
-  transition:width .5s ease,height .5s ease,opacity .5s ease;
-  opacity:0;
-}
 .glass-btn:hover{
   background:rgba(0,238,255,0.1);
   border-color:var(--cyan);
   transform:translateY(-2px);
   box-shadow:0 8px 32px rgba(0,238,255,0.2),0 0 0 1px rgba(0,238,255,0.1);
 }
-.glass-btn:active::after{width:200px;height:200px;opacity:0;}
 .glass-btn.vibrate{animation:vibrate .3s ease;}
-@keyframes vibrate{
-  0%,100%{transform:translateX(0) translateY(-2px);}
-  20%{transform:translateX(-3px) translateY(-2px);}
-  40%{transform:translateX(3px) translateY(-2px);}
-  60%{transform:translateX(-2px) translateY(-2px);}
-  80%{transform:translateX(2px) translateY(-2px);}
-}
 
 .connect-btn{
   font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1.5px;
@@ -103,7 +87,13 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
 }
 .connect-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.07) 0%,transparent 50%);pointer-events:none;}
-.connect-btn:hover{background:rgba(0,238,255,0.12);border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,238,255,0.18);}
+.connect-btn:hover:not(:disabled){background:rgba(0,238,255,0.12);border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,238,255,0.18);}
+/* Disabled state while connecting */
+.connect-btn:disabled{
+  cursor:not-allowed;
+  opacity:0.7;
+  border-color:rgba(0,238,255,0.15);
+}
 
 .wallet-connected{display:none;align-items:center;gap:0;}
 .wallet-connected.on{display:flex;}
@@ -124,6 +114,22 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   color:#ff8080;cursor:pointer;transition:all .25s;
 }
 .disconnect-btn:hover{background:rgba(255,80,80,0.18);color:#ff6060;}
+
+/* ── PENDING METAMASK BANNER ── */
+.pending-banner{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 14px;width:100%;display:none;}
+.pending-banner.on{display:block;}
+.pending-inner{
+  background:rgba(255,170,0,0.06);backdrop-filter:blur(16px);
+  border:1px solid rgba(255,170,0,0.25);border-radius:14px;
+  padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.pending-text{font-size:13px;color:#ffcc44;font-weight:600;}
+.open-mm-btn{
+  padding:8px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1.5px;border-radius:100px;
+  cursor:pointer;background:rgba(255,170,0,0.1);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,170,0,0.3);color:#ffcc44;transition:all .25s;white-space:nowrap;
+}
+.open-mm-btn:hover{background:rgba(255,170,0,0.22);}
 
 /* ── WRONG NETWORK BANNER ── */
 .switch-banner{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 14px;width:100%;display:none;}
@@ -151,7 +157,7 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   object-fit:cover;
   box-shadow:0 0 0 4px rgba(0,238,255,0.06),0 0 35px rgba(0,238,255,0.35),0 0 80px rgba(0,102,255,0.25);
   animation:pulse 3s ease-in-out infinite;
-  background:linear-gradient(135deg,#0066FF,#9B6DFF);/* fallback */
+  background:linear-gradient(135deg,#0066FF,#9B6DFF);
 }
 @keyframes pulse{
   0%,100%{box-shadow:0 0 0 4px rgba(0,238,255,0.06),0 0 35px rgba(0,238,255,0.35),0 0 80px rgba(0,102,255,0.25);}
@@ -218,38 +224,18 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   position:relative;overflow:hidden;
 }
 .ab::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.07) 0%,transparent 60%);pointer-events:none;}
-.ab::after{
-  content:'';position:absolute;top:50%;left:50%;
-  width:0;height:0;border-radius:50%;
-  transform:translate(-50%,-50%);
-  transition:width .5s ease,height .5s ease,opacity .4s ease;opacity:0;
-}
-.ab:active::after{width:250px;height:250px;opacity:0;}
 
 .ab-d{background:rgba(0,238,255,0.06);border-color:rgba(0,238,255,0.3);color:var(--cyan);}
-.ab-d::after{background:rgba(0,238,255,0.15);}
 .ab-d:hover{background:rgba(0,238,255,0.14);border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,238,255,0.2);}
 
 .ab-w{background:rgba(255,100,100,0.06);border-color:rgba(255,100,100,0.28);color:#ff8080;}
-.ab-w::after{background:rgba(255,80,80,0.15);}
 .ab-w:hover{background:rgba(255,100,100,0.16);border-color:#ff8080;transform:translateY(-2px);box-shadow:0 6px 24px rgba(255,80,80,0.18);}
 
 .ab-t{background:rgba(155,109,255,0.06);border-color:rgba(155,109,255,0.28);color:#b89bff;}
-.ab-t::after{background:rgba(155,109,255,0.15);}
 .ab-t:hover{background:rgba(155,109,255,0.16);border-color:#9B6DFF;transform:translateY(-2px);box-shadow:0 6px 24px rgba(155,109,255,0.18);}
 
-/* Vibrate on click */
-.ab.vibrate,.glass-btn.vibrate,.connect-btn.vibrate,.switch-btn.vibrate,.ca-pill.vibrate{
-  animation:vibrate .3s ease;
-}
-@keyframes vibrate{
-  0%,100%{transform:translateX(0) translateY(-2px);}
-  20%{transform:translateX(-3px) translateY(-2px);}
-  40%{transform:translateX(3px) translateY(-2px);}
-  60%{transform:translateX(-2px) translateY(-2px);}
-  80%{transform:translateX(2px) translateY(-2px);}
-}
-.ab.vibrate-flat{animation:vibrate-flat .3s ease;}
+/* Vibrate animations */
+.vibrate-flat{animation:vibrate-flat .3s ease!important;}
 @keyframes vibrate-flat{
   0%,100%{transform:translateX(0);}
   20%{transform:translateX(-3px);}
@@ -333,6 +319,7 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.success{border-color:rgba(74,222,128,0.35);color:#4ade80;}
 .toast.error{border-color:rgba(255,80,80,0.35);color:#ff8080;}
+.toast.warn{border-color:rgba(255,200,0,0.35);color:#ffcc44;}
 
 /* ── RESPONSIVE ── */
 @media(max-width:480px){
@@ -356,10 +343,18 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 <!-- WALLET BAR -->
 <div class="wallet-bar">
   <div class="net-pill" id="netPill"></div>
-  <button class="connect-btn" id="connectBtn" onclick="vibrateBtn(this);connectWallet()">Connect Wallet</button>
+  <button class="connect-btn" id="connectBtn" onclick="handleConnectClick()">Connect Wallet</button>
   <div class="wallet-connected" id="walletConnected">
     <div class="addr-pill" id="addrPill"></div>
     <button class="disconnect-btn" onclick="vibrateBtn(this);disconnectWallet()">Disconnect</button>
+  </div>
+</div>
+
+<!-- PENDING METAMASK BANNER -->
+<div class="pending-banner" id="pendingBanner">
+  <div class="pending-inner">
+    <div class="pending-text">⏳ MetaMask has a pending request — open MetaMask to approve or reject it</div>
+    <button class="open-mm-btn" onclick="retryConnect()">Retry Connection</button>
   </div>
 </div>
 
@@ -384,8 +379,7 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   </div>
   <div class="hero-title">Wrapped Base</div>
   <div class="hero-sub">wBASE · Monad Mainnet</div>
-  <div class="ca-pill" id="caBtn"
-    onclick="vibrateBtn(this);copyCA(this)">
+  <div class="ca-pill" id="caBtn" onclick="vibrateBtn(this);copyCA(this)">
     0x571c49484966dE336C74AEc98A5FF18e701E58Fe
   </div>
 </div>
@@ -491,15 +485,15 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 function showToast(msg,type='info'){
   const t=document.getElementById('toast');
   t.textContent=msg;
-  t.className='toast show '+(type==='ok'?'success':type==='err'?'error':'');
+  t.className='toast show '+(type==='ok'?'success':type==='err'?'error':type==='warn'?'warn':'');
   clearTimeout(t._to);
-  t._to=setTimeout(()=>t.classList.remove('show'),2800);
+  t._to=setTimeout(()=>t.classList.remove('show'),3200);
 }
 
 // ── VIBRATE ──
 function vibrateBtn(el){
   if(navigator.vibrate) navigator.vibrate([30]);
-  el.classList.remove('vibrate','vibrate-flat');
+  el.classList.remove('vibrate-flat');
   void el.offsetWidth;
   el.classList.add('vibrate-flat');
   setTimeout(()=>el.classList.remove('vibrate-flat'),350);
@@ -535,6 +529,40 @@ const ABI=[
 ];
 let provider,signer,ct,addr;
 
+// ── GUARD: prevent stacked eth_requestAccounts calls ──
+let isConnecting = false;
+
+function setConnectingState(connecting){
+  isConnecting = connecting;
+  const btn = document.getElementById('connectBtn');
+  if(connecting){
+    btn.disabled = true;
+    btn.innerHTML = '<span class="sp" style="border-color:var(--cyan);border-top-color:transparent;width:9px;height:9px;margin-right:8px;"></span>Connecting...';
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Connect Wallet';
+  }
+}
+
+function handleConnectClick(){
+  // If already connecting, show banner instead of making another request
+  if(isConnecting){
+    showToast('MetaMask request pending — check MetaMask','warn');
+    document.getElementById('pendingBanner').classList.add('on');
+    return;
+  }
+  vibrateBtn(document.getElementById('connectBtn'));
+  connectWallet();
+}
+
+// Allow retry after -32002 — user opens MetaMask, approves/rejects, then clicks Retry
+function retryConnect(){
+  isConnecting = false;
+  document.getElementById('pendingBanner').classList.remove('on');
+  setConnectingState(false);
+  connectWallet();
+}
+
 function msg(id,text,type){
   const el=document.getElementById(id);
   el.innerHTML=(type==='wait'?'<span class="sp"></span>':'')+text;
@@ -548,6 +576,7 @@ function showConnected(a){
   const wc=document.getElementById('walletConnected');
   wc.classList.add('on');
   document.getElementById('addrPill').textContent=a.slice(0,6)+'...'+a.slice(-4);
+  document.getElementById('pendingBanner').classList.remove('on');
   showToast('Wallet connected','ok');
 }
 
@@ -558,6 +587,9 @@ function showDisconnected(){
   document.getElementById('walletInfo').classList.remove('on');
   document.getElementById('actionsPanel').classList.remove('on');
   document.getElementById('switchBanner').classList.remove('on');
+  document.getElementById('pendingBanner').classList.remove('on');
+  isConnecting = false;
+  setConnectingState(false);
   addr=null;provider=null;signer=null;ct=null;
   showToast('Wallet disconnected');
 }
@@ -567,50 +599,77 @@ function disconnectWallet(){showDisconnected();}
 async function connectWallet(){
   if(!window.ethereum){
     showToast('MetaMask not found — install it first','err');
-    alert('MetaMask not found. Please install MetaMask from metamask.io');
     return;
   }
-  const btn=document.getElementById('connectBtn');
-  btn.innerHTML='<span class="sp" style="border-color:var(--cyan);border-top-color:transparent;"></span>Connecting...';
+
+  // Prevent duplicate requests
+  if(isConnecting) return;
+  setConnectingState(true);
+
   try{
-    const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
-    addr=accounts[0];
-    provider=new ethers.providers.Web3Provider(window.ethereum);
-    signer=provider.getSigner();
-    ct=new ethers.Contract(CA,ABI,signer);
+    const accounts = await window.ethereum.request({method:'eth_requestAccounts'});
+    addr = accounts[0];
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    ct = new ethers.Contract(CA, ABI, signer);
+
+    setConnectingState(false);
     showConnected(addr);
     await checkNet();
     await loadBal();
-    window.ethereum.on('accountsChanged',a=>{
-      if(a.length===0){showDisconnected();}
-      else{addr=a[0];document.getElementById('addrPill').textContent=addr.slice(0,6)+'...'+addr.slice(-4);loadBal();}
-    });
-    window.ethereum.on('chainChanged',()=>location.reload());
-  }catch(e){
-    btn.textContent='Connect Wallet';
-    if(e.code===-32002){
-      showToast('Pending MetaMask request — check MetaMask','err');
-      alert('MetaMask has a pending request. Open MetaMask and approve or reject it first.');
+
+    // Remove duplicates by using named function references
+    window.ethereum.removeListener('accountsChanged', onAccountsChanged);
+    window.ethereum.removeListener('chainChanged', onChainChanged);
+    window.ethereum.on('accountsChanged', onAccountsChanged);
+    window.ethereum.on('chainChanged', onChainChanged);
+
+  } catch(e){
+    setConnectingState(false);
+
+    if(e.code === -32002){
+      // Request already pending in MetaMask — show helpful banner
+      document.getElementById('pendingBanner').classList.add('on');
+      showToast('Open MetaMask to approve the pending request','warn');
+      console.warn('MetaMask pending request:', e.message);
+    } else if(e.code === 4001){
+      // User explicitly rejected
+      showToast('Connection rejected by user','err');
     } else {
-      showToast('Connection rejected','err');
+      showToast('Connection failed — check MetaMask','err');
+      console.error(e);
     }
-    console.error(e);
   }
 }
 
+function onAccountsChanged(accounts){
+  if(accounts.length === 0){
+    showDisconnected();
+  } else {
+    addr = accounts[0];
+    document.getElementById('addrPill').textContent = addr.slice(0,6)+'...'+addr.slice(-4);
+    loadBal();
+  }
+}
+
+function onChainChanged(){
+  // Reload is the safest approach after a chain switch
+  location.reload();
+}
+
 async function checkNet(){
-  const id=await window.ethereum.request({method:'eth_chainId'});
-  const ok=id.toLowerCase()===CHAIN_HEX.toLowerCase();
-  const pill=document.getElementById('netPill');
+  const id = await window.ethereum.request({method:'eth_chainId'});
+  const ok = id.toLowerCase() === CHAIN_HEX.toLowerCase();
+  const pill = document.getElementById('netPill');
   pill.classList.add('on');
   if(ok){
-    pill.textContent='Monad Mainnet';
+    pill.textContent = 'Monad Mainnet';
     pill.classList.remove('bad');
     document.getElementById('switchBanner').classList.remove('on');
     document.getElementById('walletInfo').classList.add('on');
     document.getElementById('actionsPanel').classList.add('on');
-  }else{
-    pill.textContent='Wrong Network';
+  } else {
+    pill.textContent = 'Wrong Network';
     pill.classList.add('bad');
     document.getElementById('switchBanner').classList.add('on');
     document.getElementById('walletInfo').classList.remove('on');
@@ -622,8 +681,8 @@ async function checkNet(){
 async function switchToMonad(){
   try{
     await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:CHAIN_HEX}]});
-  }catch(e){
-    if(e.code===4902){
+  } catch(e){
+    if(e.code === 4902){
       await window.ethereum.request({method:'wallet_addEthereumChain',params:[MONAD]});
     }
   }
@@ -633,11 +692,11 @@ async function switchToMonad(){
 
 async function loadBal(){
   try{
-    const[mon,base]=await Promise.all([provider.getBalance(addr),ct.balanceOf(addr)]);
-    document.getElementById('wAddr').textContent=addr.slice(0,10)+'...'+addr.slice(-6);
-    document.getElementById('wMON').textContent=parseFloat(ethers.utils.formatEther(mon)).toFixed(4)+' MON';
-    document.getElementById('wBASE').textContent=parseFloat(ethers.utils.formatEther(base)).toFixed(4)+' BASE';
-  }catch(e){console.error(e);}
+    const[mon,base] = await Promise.all([provider.getBalance(addr), ct.balanceOf(addr)]);
+    document.getElementById('wAddr').textContent = addr.slice(0,10)+'...'+addr.slice(-6);
+    document.getElementById('wMON').textContent = parseFloat(ethers.utils.formatEther(mon)).toFixed(4)+' MON';
+    document.getElementById('wBASE').textContent = parseFloat(ethers.utils.formatEther(base)).toFixed(4)+' BASE';
+  } catch(e){ console.error(e); }
 }
 
 async function doDeposit(){
