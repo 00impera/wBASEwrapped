@@ -367,7 +367,7 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 <!-- WRONG NETWORK -->
 <div class="switch-banner" id="switchBanner">
   <div class="switch-inner">
-    <div class="switch-text">Wrong network — switch to Monad Mainnet (Chain ID 10143)</div>
+    <div class="switch-text">Wrong network — switch to Monad Mainnet (Chain ID 143)</div>
     <button class="switch-btn" onclick="vibrateBtn(this);switchToMonad()">Switch Network</button>
   </div>
 </div>
@@ -437,8 +437,9 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 </div>
 
 <!-- STATS -->
+<!-- ✅ FIXED: Chain ID updated from 10143 (testnet) to 143 (mainnet) -->
 <div class="stats">
-  <div class="stat"><div class="sv">10143</div><div class="sl">Chain ID</div></div>
+  <div class="stat"><div class="sv">143</div><div class="sl">Chain ID</div></div>
   <div class="stat"><div class="sv">BASE</div><div class="sl">Symbol</div></div>
   <div class="stat"><div class="sv">18</div><div class="sl">Decimals</div></div>
 </div>
@@ -477,7 +478,8 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   </div>
 </div>
 
-<div class="footer">WRAPPED BASE · wBASE · MONAD MAINNET · CHAIN ID 10143 · 0x571c...58Fe</div>
+<!-- ✅ FIXED: Footer updated to show correct mainnet Chain ID 143 -->
+<div class="footer">WRAPPED BASE · wBASE · MONAD MAINNET · CHAIN ID 143 · 0x571c...58Fe</div>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
@@ -530,13 +532,17 @@ function copyCA(el){
 
 // ── CONTRACT ──
 const CA='0x571c49484966dE336C74AEc98A5FF18e701E58Fe';
-const CHAIN_HEX='0x279F';
+
+// ✅ FIXED: Monad MAINNET is Chain ID 143 (0x8F), NOT 10143 (0x279F) which is testnet
+const CHAIN_HEX='0x8F'; // 143 decimal = Monad Mainnet
 const MONAD={
-  chainId:CHAIN_HEX,chainName:'Monad Mainnet',
+  chainId:CHAIN_HEX,
+  chainName:'Monad Mainnet',
   nativeCurrency:{name:'MON',symbol:'MON',decimals:18},
   rpcUrls:['https://rpc.monad.xyz'],
   blockExplorerUrls:['https://monadscan.com']
 };
+
 const ABI=[
   'function deposit() payable',
   'function withdraw(uint256 wad)',
@@ -544,7 +550,7 @@ const ABI=[
   'function balanceOf(address) view returns(uint256)'
 ];
 let provider,signer,ct,addr;
-let contractDeployed = true; // optimistic; set false if balanceOf reverts with 0x
+let contractDeployed = true;
 
 // ── GUARD: prevent stacked eth_requestAccounts calls ──
 let isConnecting = false;
@@ -667,6 +673,7 @@ function onChainChanged(){
 
 async function checkNet(){
   const id = await window.ethereum.request({method:'eth_chainId'});
+  // ✅ FIXED: Compare against 0x8F (143 = Monad Mainnet), not 0x279F (10143 = testnet)
   const ok = id.toLowerCase() === CHAIN_HEX.toLowerCase();
   const pill = document.getElementById('netPill');
   pill.classList.add('on');
@@ -698,11 +705,9 @@ async function switchToMonad(){
   await loadBal();
 }
 
-// ── FIX: loadBal with isolated balanceOf error handling ──
 async function loadBal(){
   if(!provider || !addr) return;
 
-  // Always try to get native MON balance — this never needs a contract
   let monBal = ethers.BigNumber.from(0);
   try{
     monBal = await provider.getBalance(addr);
@@ -710,7 +715,6 @@ async function loadBal(){
     console.warn('getBalance failed:', e);
   }
 
-  // Try balanceOf separately — gracefully handle not-deployed / call revert
   let baseBal = ethers.BigNumber.from(0);
   let baseOk = false;
   try{
@@ -720,7 +724,6 @@ async function loadBal(){
     document.getElementById('contractBanner').classList.remove('on');
   } catch(e){
     contractDeployed = false;
-    // CALL_EXCEPTION means contract returned 0x (not deployed or wrong ABI)
     if(e.code === 'CALL_EXCEPTION'){
       console.warn('balanceOf CALL_EXCEPTION — contract likely not deployed at', CA);
       document.getElementById('contractBanner').classList.add('on');
@@ -729,14 +732,10 @@ async function loadBal(){
     }
   }
 
-  // Update address display
   document.getElementById('wAddr').textContent = addr.slice(0,10)+'...'+addr.slice(-6);
-
-  // MON balance
   document.getElementById('wMON').textContent =
     parseFloat(ethers.utils.formatEther(monBal)).toFixed(4)+' MON';
 
-  // BASE balance — show warning style if contract not deployed
   const baseEl = document.getElementById('wBASE');
   if(baseOk){
     baseEl.textContent = parseFloat(ethers.utils.formatEther(baseBal)).toFixed(4)+' BASE';
@@ -747,7 +746,6 @@ async function loadBal(){
   }
 }
 
-// ── FIX: humanise transaction errors ──
 function txError(e){
   if(e.code === 'CALL_EXCEPTION') return 'Contract not deployed or call reverted';
   if(e.code === 4001 || e.code === 'ACTION_REJECTED') return 'Transaction rejected';
