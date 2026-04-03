@@ -88,12 +88,7 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 }
 .connect-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.07) 0%,transparent 50%);pointer-events:none;}
 .connect-btn:hover:not(:disabled){background:rgba(0,238,255,0.12);border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,238,255,0.18);}
-/* Disabled state while connecting */
-.connect-btn:disabled{
-  cursor:not-allowed;
-  opacity:0.7;
-  border-color:rgba(0,238,255,0.15);
-}
+.connect-btn:disabled{cursor:not-allowed;opacity:0.7;border-color:rgba(0,238,255,0.15);}
 
 .wallet-connected{display:none;align-items:center;gap:0;}
 .wallet-connected.on{display:flex;}
@@ -143,6 +138,16 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 }
 .switch-btn:hover{background:rgba(255,80,80,0.22);}
 
+/* ── CONTRACT WARNING BANNER ── */
+.contract-banner{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 14px;width:100%;display:none;}
+.contract-banner.on{display:block;}
+.contract-inner{
+  background:rgba(255,170,0,0.04);backdrop-filter:blur(16px);
+  border:1px solid rgba(255,170,0,0.18);border-radius:14px;
+  padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.contract-text{font-size:12px;color:rgba(255,204,68,0.8);font-weight:600;line-height:1.5;}
+
 /* ── HERO ── */
 .hero{position:relative;z-index:1;text-align:center;padding:40px 24px 24px;display:flex;flex-direction:column;align-items:center;gap:18px;}
 .logo-wrap{position:relative;display:inline-block;}
@@ -191,6 +196,7 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 .wkey{font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
 .wval{font-family:'Orbitron',monospace;font-size:12px;color:var(--cyan);text-align:right;word-break:break-all;}
 .wval.g{color:#4ade80;}
+.wval.warn{color:#ffcc44;}
 
 /* ── ACTIONS ── */
 .actions{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 20px;width:100%;display:none;}
@@ -366,6 +372,16 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   </div>
 </div>
 
+<!-- CONTRACT NOT DEPLOYED WARNING -->
+<div class="contract-banner" id="contractBanner">
+  <div class="contract-inner">
+    <span style="font-size:18px;">⚠️</span>
+    <div class="contract-text">
+      Contract not yet deployed at <code style="font-family:'Orbitron',monospace;font-size:10px;opacity:.8;">0x571c...58Fe</code> on Monad Mainnet — BASE balance shown as 0. Deposit/Withdraw will fail until the contract is live.
+    </div>
+  </div>
+</div>
+
 <!-- HERO -->
 <div class="hero">
   <div class="logo-wrap">
@@ -528,6 +544,7 @@ const ABI=[
   'function balanceOf(address) view returns(uint256)'
 ];
 let provider,signer,ct,addr;
+let contractDeployed = true; // optimistic; set false if balanceOf reverts with 0x
 
 // ── GUARD: prevent stacked eth_requestAccounts calls ──
 let isConnecting = false;
@@ -545,7 +562,6 @@ function setConnectingState(connecting){
 }
 
 function handleConnectClick(){
-  // If already connecting, show banner instead of making another request
   if(isConnecting){
     showToast('MetaMask request pending — check MetaMask','warn');
     document.getElementById('pendingBanner').classList.add('on');
@@ -555,7 +571,6 @@ function handleConnectClick(){
   connectWallet();
 }
 
-// Allow retry after -32002 — user opens MetaMask, approves/rejects, then clicks Retry
 function retryConnect(){
   isConnecting = false;
   document.getElementById('pendingBanner').classList.remove('on');
@@ -588,6 +603,7 @@ function showDisconnected(){
   document.getElementById('actionsPanel').classList.remove('on');
   document.getElementById('switchBanner').classList.remove('on');
   document.getElementById('pendingBanner').classList.remove('on');
+  document.getElementById('contractBanner').classList.remove('on');
   isConnecting = false;
   setConnectingState(false);
   addr=null;provider=null;signer=null;ct=null;
@@ -601,8 +617,6 @@ async function connectWallet(){
     showToast('MetaMask not found — install it first','err');
     return;
   }
-
-  // Prevent duplicate requests
   if(isConnecting) return;
   setConnectingState(true);
 
@@ -618,7 +632,6 @@ async function connectWallet(){
     await checkNet();
     await loadBal();
 
-    // Remove duplicates by using named function references
     window.ethereum.removeListener('accountsChanged', onAccountsChanged);
     window.ethereum.removeListener('chainChanged', onChainChanged);
     window.ethereum.on('accountsChanged', onAccountsChanged);
@@ -626,14 +639,10 @@ async function connectWallet(){
 
   } catch(e){
     setConnectingState(false);
-
     if(e.code === -32002){
-      // Request already pending in MetaMask — show helpful banner
       document.getElementById('pendingBanner').classList.add('on');
       showToast('Open MetaMask to approve the pending request','warn');
-      console.warn('MetaMask pending request:', e.message);
     } else if(e.code === 4001){
-      // User explicitly rejected
       showToast('Connection rejected by user','err');
     } else {
       showToast('Connection failed — check MetaMask','err');
@@ -653,7 +662,6 @@ function onAccountsChanged(accounts){
 }
 
 function onChainChanged(){
-  // Reload is the safest approach after a chain switch
   location.reload();
 }
 
@@ -690,18 +698,68 @@ async function switchToMonad(){
   await loadBal();
 }
 
+// ── FIX: loadBal with isolated balanceOf error handling ──
 async function loadBal(){
+  if(!provider || !addr) return;
+
+  // Always try to get native MON balance — this never needs a contract
+  let monBal = ethers.BigNumber.from(0);
   try{
-    const[mon,base] = await Promise.all([provider.getBalance(addr), ct.balanceOf(addr)]);
-    document.getElementById('wAddr').textContent = addr.slice(0,10)+'...'+addr.slice(-6);
-    document.getElementById('wMON').textContent = parseFloat(ethers.utils.formatEther(mon)).toFixed(4)+' MON';
-    document.getElementById('wBASE').textContent = parseFloat(ethers.utils.formatEther(base)).toFixed(4)+' BASE';
-  } catch(e){ console.error(e); }
+    monBal = await provider.getBalance(addr);
+  } catch(e){
+    console.warn('getBalance failed:', e);
+  }
+
+  // Try balanceOf separately — gracefully handle not-deployed / call revert
+  let baseBal = ethers.BigNumber.from(0);
+  let baseOk = false;
+  try{
+    baseBal = await ct.balanceOf(addr);
+    baseOk = true;
+    contractDeployed = true;
+    document.getElementById('contractBanner').classList.remove('on');
+  } catch(e){
+    contractDeployed = false;
+    // CALL_EXCEPTION means contract returned 0x (not deployed or wrong ABI)
+    if(e.code === 'CALL_EXCEPTION'){
+      console.warn('balanceOf CALL_EXCEPTION — contract likely not deployed at', CA);
+      document.getElementById('contractBanner').classList.add('on');
+    } else {
+      console.warn('balanceOf error:', e.code, e.message);
+    }
+  }
+
+  // Update address display
+  document.getElementById('wAddr').textContent = addr.slice(0,10)+'...'+addr.slice(-6);
+
+  // MON balance
+  document.getElementById('wMON').textContent =
+    parseFloat(ethers.utils.formatEther(monBal)).toFixed(4)+' MON';
+
+  // BASE balance — show warning style if contract not deployed
+  const baseEl = document.getElementById('wBASE');
+  if(baseOk){
+    baseEl.textContent = parseFloat(ethers.utils.formatEther(baseBal)).toFixed(4)+' BASE';
+    baseEl.className = 'wval g';
+  } else {
+    baseEl.textContent = '0.0000 BASE (contract unavailable)';
+    baseEl.className = 'wval warn';
+  }
+}
+
+// ── FIX: humanise transaction errors ──
+function txError(e){
+  if(e.code === 'CALL_EXCEPTION') return 'Contract not deployed or call reverted';
+  if(e.code === 4001 || e.code === 'ACTION_REJECTED') return 'Transaction rejected';
+  if(e.code === 'INSUFFICIENT_FUNDS') return 'Insufficient MON for gas';
+  if(e.code === 'UNPREDICTABLE_GAS_LIMIT') return 'Gas estimation failed — contract may not be live';
+  return e.reason || e.message || 'Transaction failed';
 }
 
 async function doDeposit(){
   const v=document.getElementById('depAmt').value;
-  if(!v||v<=0)return msg('depMsg','Enter a valid amount','err');
+  if(!v||v<=0) return msg('depMsg','Enter a valid amount','err');
+  if(!contractDeployed) return msg('depMsg','Contract not deployed yet','err');
   try{
     msg('depMsg','Waiting for approval...','wait');
     const tx=await ct.deposit({value:ethers.utils.parseEther(v)});
@@ -710,12 +768,16 @@ async function doDeposit(){
     msg('depMsg','Deposit successful!','ok');
     await loadBal();
     document.getElementById('depAmt').value='';
-  }catch(e){msg('depMsg',e.reason||'Rejected','err');}
+  } catch(e){
+    msg('depMsg', txError(e), 'err');
+    console.error('deposit error:', e);
+  }
 }
 
 async function doWithdraw(){
   const v=document.getElementById('wdAmt').value;
-  if(!v||v<=0)return msg('wdMsg','Enter a valid amount','err');
+  if(!v||v<=0) return msg('wdMsg','Enter a valid amount','err');
+  if(!contractDeployed) return msg('wdMsg','Contract not deployed yet','err');
   try{
     msg('wdMsg','Waiting for approval...','wait');
     const tx=await ct.withdraw(ethers.utils.parseEther(v));
@@ -724,14 +786,18 @@ async function doWithdraw(){
     msg('wdMsg','Withdrawal successful!','ok');
     await loadBal();
     document.getElementById('wdAmt').value='';
-  }catch(e){msg('wdMsg',e.reason||'Rejected','err');}
+  } catch(e){
+    msg('wdMsg', txError(e), 'err');
+    console.error('withdraw error:', e);
+  }
 }
 
 async function doTransfer(){
   const to=document.getElementById('trTo').value;
   const v=document.getElementById('trAmt').value;
-  if(!to||!v)return msg('trMsg','Fill in all fields','err');
-  if(!ethers.utils.isAddress(to))return msg('trMsg','Invalid address','err');
+  if(!to||!v) return msg('trMsg','Fill in all fields','err');
+  if(!ethers.utils.isAddress(to)) return msg('trMsg','Invalid address','err');
+  if(!contractDeployed) return msg('trMsg','Contract not deployed yet','err');
   try{
     msg('trMsg','Waiting for approval...','wait');
     const tx=await ct.transfer(to,ethers.utils.parseEther(v));
@@ -741,7 +807,10 @@ async function doTransfer(){
     await loadBal();
     document.getElementById('trTo').value='';
     document.getElementById('trAmt').value='';
-  }catch(e){msg('trMsg',e.reason||'Rejected','err');}
+  } catch(e){
+    msg('trMsg', txError(e), 'err');
+    console.error('transfer error:', e);
+  }
 }
 </script>
 </body>
