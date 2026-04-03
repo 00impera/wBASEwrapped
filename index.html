@@ -321,8 +321,11 @@ async function connectWallet(){
     await loadBal();
     window.ethereum.on('accountsChanged',a=>{if(a.length===0){showDisconnected();}else{addr=a[0];document.getElementById('addrPill').textContent=addr.slice(0,6)+'...'+addr.slice(-4);loadBal();}});
     window.ethereum.on('chainChanged',()=>location.reload());
-  }catch(e){
+ }catch(e){
     btn.textContent='Connect Wallet';
+    if(e.code===-32002){
+      alert('MetaMask has a pending request. Open MetaMask and approve or reject it first.');
+    }
     console.error(e);
   }
 }
