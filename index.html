@@ -312,12 +312,13 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 const CA = '0x571c49484966dE336C74AEc98A5FF18e701E58Fe';
 const CHAIN_ID_DEC = 143;
 const CHAIN_HEX = '0x8F';
+const RPC_URL = 'https://rpc.monad.xyz';
 
 const MONAD_PARAMS = {
   chainId: CHAIN_HEX,
   chainName: 'Monad Mainnet',
   nativeCurrency: { name:'MON', symbol:'MON', decimals:18 },
-  rpcUrls: ['https://rpc.monad.xyz'],
+  rpcUrls: [RPC_URL],
   blockExplorerUrls: ['https://monadscan.com']
 };
 
@@ -339,18 +340,64 @@ const ABI = [
 let addr = null;
 let isConnecting = false;
 
-// Always rebuild provider fresh — never cache across chain changes
-function getProvider() {
-  return new ethers.providers.Web3Provider(window.ethereum, 'any');
+// ─────────────────────────────────────────────────────────────
+// ROOT FIX: Monad's RPC returns non-standard tx response fields
+// (missing gasPrice, v, r, s etc.) which causes ethers v5's
+// transactionResponse formatter to throw "invalid BigNumber string"
+// on undefined values.
+//
+// Strategy:
+//   1. Use a JsonRpcProvider pointed at Monad's RPC for READ ops
+//      (balances, etc.) — avoids MetaMask's formatter entirely.
+//   2. For WRITE ops we still need MetaMask to sign, but we bypass
+//      ethers' tx-response parsing by calling eth_sendTransaction
+//      via raw RPC and then polling for the receipt ourselves.
+// ─────────────────────────────────────────────────────────────
+
+// Read-only provider: direct JSON-RPC, no MetaMask involved
+function getReadProvider() {
+  return new ethers.providers.JsonRpcProvider(RPC_URL, {
+    chainId: CHAIN_ID_DEC,
+    name: 'monad'
+  });
 }
 
-function getContract(signerOrProvider) {
-  return new ethers.Contract(CA, ABI, signerOrProvider);
+// Returns ethers Interface for ABI encoding
+const iface = new ethers.utils.Interface(ABI);
+
+// Send a write tx via MetaMask raw RPC (avoids ethers formatter bug).
+// Returns txHash string or throws.
+async function sendRawTx(to, data, valueHex) {
+  const params = {
+    from: addr,
+    to,
+    data,
+    ...(valueHex ? { value: valueHex } : {})
+    // No gasLimit here — let MetaMask estimate. If that fails we add
+    // fallback below.
+  };
+  return await window.ethereum.request({
+    method: 'eth_sendTransaction',
+    params: [params]
+  });
 }
 
-// Always build fresh signer for writes
-function getSigner() {
-  return getProvider().getSigner();
+// Poll for receipt until mined (max ~2 min).
+async function waitForReceipt(txHash, timeoutMs = 120000) {
+  const provider = getReadProvider();
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const receipt = await provider.getTransactionReceipt(txHash);
+      if (receipt) return receipt;
+    } catch(e) { /* keep polling */ }
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  throw new Error('Transaction timeout — check explorer');
+}
+
+function getReadContract() {
+  return new ethers.Contract(CA, ABI, getReadProvider());
 }
 
 // ── TOAST ──
@@ -494,9 +541,7 @@ function onAccountsChanged(accounts) {
   }
 }
 
-function onChainChanged() {
-  checkNet();
-}
+function onChainChanged() { checkNet(); }
 
 // ── NETWORK CHECK ──
 async function checkNet() {
@@ -540,33 +585,29 @@ async function switchToMonad() {
         });
       } catch(addErr) {
         showToast('Failed to add Monad network', 'err');
-        return;
       }
     }
   }
 }
 
-// ── BALANCES ──
+// ── BALANCES (uses direct RPC provider — no MetaMask formatter) ──
 async function loadBal() {
   if(!addr) return;
 
-  const provider = getProvider();
+  const provider = getReadProvider();
+  const ct = getReadContract();
 
   let monBal = ethers.BigNumber.from(0);
-  try {
-    monBal = await provider.getBalance(addr);
-  } catch(e) {
-    console.warn('getBalance failed:', e.message);
-  }
+  try { monBal = await provider.getBalance(addr); }
+  catch(e) { console.warn('getBalance failed:', e.message); }
 
-  const ct = getContract(provider);
   let baseBal = ethers.BigNumber.from(0);
   let baseOk = false;
   try {
     baseBal = await ct.balanceOf(addr);
     baseOk = true;
   } catch(e) {
-    console.warn('balanceOf failed:', e.code, e.message);
+    console.warn('balanceOf failed:', e.message);
   }
 
   document.getElementById('wAddr').textContent = addr.slice(0,10)+'...'+addr.slice(-6);
@@ -583,30 +624,10 @@ async function loadBal() {
   }
 }
 
-// ── TX ERROR HELPER ──
-function txError(e) {
-  // User rejection — both MetaMask error codes
-  if(e.code === 'ACTION_REJECTED' || e.code === 4001) return 'Transaction rejected';
-  if(e.code === 'INSUFFICIENT_FUNDS') return 'Insufficient MON for gas';
-  // FIX: UNPREDICTABLE_GAS_LIMIT usually means contract reverted (e.g. insufficient balance)
-  // Surface the inner revert reason instead of the raw ethers error
-  if(e.code === 'UNPREDICTABLE_GAS_LIMIT') {
-    const inner = e.error?.data?.message || e.error?.message || '';
-    if(inner.includes('insufficient balance')) return 'Insufficient BASE balance';
-    if(inner) return 'Contract error: ' + inner;
-    return 'Gas estimation failed — check your balance';
-  }
-  if(e.code === 'CALL_EXCEPTION') return 'Contract call reverted';
-  return e.reason || e.message || 'Transaction failed';
-}
-
 // ── PRE-FLIGHT BALANCE CHECK ──
-// FIX: Check on-chain balance before attempting tx so we fail fast with a
-// clear message rather than letting estimateGas throw UNPREDICTABLE_GAS_LIMIT.
 async function checkBaseBalance(amountWei) {
   try {
-    const provider = getProvider();
-    const ct = getContract(provider);
+    const ct = getReadContract();
     const bal = await ct.balanceOf(addr);
     if(bal.lt(amountWei)) {
       const have = parseFloat(ethers.utils.formatEther(bal)).toFixed(4);
@@ -614,111 +635,122 @@ async function checkBaseBalance(amountWei) {
       return `Insufficient BASE: have ${have}, need ${need}`;
     }
   } catch(e) {
-    // If we can't read balance just let the tx attempt naturally
     console.warn('pre-flight balance check failed:', e.message);
   }
-  return null; // null = ok to proceed
+  return null;
 }
 
-// ── ACTIONS ──
+// ── TX ERROR HELPER ──
+function txError(e) {
+  if(e.code === 4001 || e.code === 'ACTION_REJECTED') return 'Transaction rejected';
+  if(e.code === -32000 || (e.message && e.message.includes('insufficient funds')))
+    return 'Insufficient MON for gas';
+  return e.reason || e.message || 'Transaction failed';
+}
 
-// FIX 1: deposit — guard against undefined tx / malformed receipt
+// ─────────────────────────────────────────────────────────────
+// ACTIONS — all use sendRawTx + waitForReceipt to completely
+// bypass ethers' transactionResponse formatter (the crash source)
+// ─────────────────────────────────────────────────────────────
+
 async function doDeposit() {
   const v = document.getElementById('depAmt').value;
   if(!v || parseFloat(v) <= 0) return msg('depMsg','Enter a valid amount','err');
-  let tx;
+
+  let valueWei;
+  try { valueWei = ethers.utils.parseEther(v); }
+  catch(e) { return msg('depMsg','Invalid amount','err'); }
+
+  const data = iface.encodeFunctionData('deposit', []);
+  const valueHex = valueWei.toHexString();
+
+  let txHash;
   try {
     msg('depMsg','Waiting for approval...','wait');
-    const ct = getContract(getSigner());
-    tx = await ct.deposit({ value: ethers.utils.parseEther(v) });
+    txHash = await sendRawTx(CA, data, valueHex);
   } catch(e) {
-    // Catch user rejection or send failure separately so we don't call tx.wait() on undefined
-    msg('depMsg', txError(e), 'err');
-    console.error('deposit send error:', e);
-    return;
+    return msg('depMsg', txError(e), 'err');
   }
+
   try {
     msg('depMsg','Confirming...','wait');
-    await tx.wait();
-    msg('depMsg','Deposit successful!','ok');
+    const receipt = await waitForReceipt(txHash);
+    if(receipt.status === 0) throw new Error('Transaction reverted on-chain');
+    msg('depMsg','Deposit successful! ✓','ok');
     await loadBal();
     document.getElementById('depAmt').value = '';
   } catch(e) {
-    msg('depMsg', txError(e), 'err');
-    console.error('deposit wait error:', e);
+    msg('depMsg', e.message || 'Transaction failed', 'err');
   }
 }
 
-// FIX 2: withdraw — pre-flight balance check + explicit gasLimit to avoid
-// estimateGas throwing UNPREDICTABLE_GAS_LIMIT on borderline balances
 async function doWithdraw() {
   const v = document.getElementById('wdAmt').value;
   if(!v || parseFloat(v) <= 0) return msg('wdMsg','Enter a valid amount','err');
 
-  const amtWei = ethers.utils.parseEther(v);
+  let amtWei;
+  try { amtWei = ethers.utils.parseEther(v); }
+  catch(e) { return msg('wdMsg','Invalid amount','err'); }
 
-  // Pre-flight: check BASE balance before touching MetaMask
   const balErr = await checkBaseBalance(amtWei);
   if(balErr) return msg('wdMsg', balErr, 'err');
 
-  let tx;
+  const data = iface.encodeFunctionData('withdraw', [amtWei]);
+
+  let txHash;
   try {
     msg('wdMsg','Waiting for approval...','wait');
-    const ct = getContract(getSigner());
-    // Explicit gasLimit bypasses estimateGas and avoids UNPREDICTABLE_GAS_LIMIT
-    tx = await ct.withdraw(amtWei, { gasLimit: 100000 });
+    txHash = await sendRawTx(CA, data, null);
   } catch(e) {
-    msg('wdMsg', txError(e), 'err');
-    console.error('withdraw send error:', e);
-    return;
+    return msg('wdMsg', txError(e), 'err');
   }
+
   try {
     msg('wdMsg','Confirming...','wait');
-    await tx.wait();
-    msg('wdMsg','Withdrawal successful!','ok');
+    const receipt = await waitForReceipt(txHash);
+    if(receipt.status === 0) throw new Error('Transaction reverted on-chain');
+    msg('wdMsg','Withdrawal successful! ✓','ok');
     await loadBal();
     document.getElementById('wdAmt').value = '';
   } catch(e) {
-    msg('wdMsg', txError(e), 'err');
-    console.error('withdraw wait error:', e);
+    msg('wdMsg', e.message || 'Transaction failed', 'err');
   }
 }
 
-// FIX 3: transfer — pre-flight balance check + explicit gasLimit
 async function doTransfer() {
-  const to = document.getElementById('trTo').value.trim();
-  const v  = document.getElementById('trAmt').value;
+  const to  = document.getElementById('trTo').value.trim();
+  const v   = document.getElementById('trAmt').value;
   if(!to || !v) return msg('trMsg','Fill in all fields','err');
   if(!ethers.utils.isAddress(to)) return msg('trMsg','Invalid address','err');
   if(parseFloat(v) <= 0) return msg('trMsg','Enter a valid amount','err');
 
-  const amtWei = ethers.utils.parseEther(v);
+  let amtWei;
+  try { amtWei = ethers.utils.parseEther(v); }
+  catch(e) { return msg('trMsg','Invalid amount','err'); }
 
-  // Pre-flight: check BASE balance before touching MetaMask
   const balErr = await checkBaseBalance(amtWei);
   if(balErr) return msg('trMsg', balErr, 'err');
 
-  let tx;
+  const data = iface.encodeFunctionData('transfer', [to, amtWei]);
+
+  let txHash;
   try {
     msg('trMsg','Waiting for approval...','wait');
-    const ct = getContract(getSigner());
-    // Explicit gasLimit bypasses estimateGas and avoids UNPREDICTABLE_GAS_LIMIT
-    tx = await ct.transfer(to, amtWei, { gasLimit: 100000 });
+    txHash = await sendRawTx(CA, data, null);
   } catch(e) {
-    msg('trMsg', txError(e), 'err');
-    console.error('transfer send error:', e);
-    return;
+    return msg('trMsg', txError(e), 'err');
   }
+
   try {
     msg('trMsg','Confirming...','wait');
-    await tx.wait();
-    msg('trMsg','Transfer successful!','ok');
+    const receipt = await waitForReceipt(txHash);
+    if(receipt.status === 0) throw new Error('Transaction reverted on-chain');
+    msg('trMsg','Transfer successful! ✓','ok');
     await loadBal();
     document.getElementById('trTo').value = '';
     document.getElementById('trAmt').value = '';
   } catch(e) {
-    msg('trMsg', txError(e), 'err');
-    console.error('transfer wait error:', e);
+    msg('trMsg', e.message || 'Transaction failed', 'err');
   }
 }
 </script>
