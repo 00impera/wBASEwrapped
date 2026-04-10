@@ -9,111 +9,102 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --cyan:#00EEFF;--blue:#0066FF;--purple:#9B6DFF;
-  --dark:#03050F;--card:#080D20;--card2:#0A1228;--border:#112244;
-  --glass-bg:rgba(8,13,32,0.55);
-  --glass-border:rgba(0,238,255,0.18);
+  --dark:#03050F;--border:#112244;
+  --glass-bg:rgba(8,13,32,0.55);--glass-border:rgba(0,238,255,0.18);
 }
 body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;}
-.bg-canvas{position:fixed;inset:0;z-index:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 10%,rgba(0,100,255,0.15) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 80%,rgba(155,109,255,0.13) 0%,transparent 60%),
-    radial-gradient(ellipse 40% 40% at 50% 50%,rgba(0,238,255,0.04) 0%,transparent 70%),
-    #03050F;
-  pointer-events:none;}
-.grid-lines{position:fixed;inset:0;z-index:0;
-  background-image:linear-gradient(rgba(0,102,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,102,255,0.05) 1px,transparent 1px);
-  background-size:50px 50px;pointer-events:none;}
+.bg-canvas{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(0,100,255,0.15) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(155,109,255,0.13) 0%,transparent 60%),#03050F;pointer-events:none;}
+.grid-lines{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,102,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,102,255,0.05) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;}
 .grid-lines::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 100% at 50% 50%,transparent 40%,var(--dark) 100%);}
 .particles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
 .particle{position:absolute;width:2px;height:2px;background:var(--cyan);border-radius:50%;opacity:0;animation:floatUp var(--dur,8s) var(--delay,0s) infinite ease-in;}
-@keyframes floatUp{
-  0%{opacity:0;transform:translateY(100vh) translateX(0);}
-  10%{opacity:.6;}90%{opacity:.2;}
-  100%{opacity:0;transform:translateY(-10vh) translateX(var(--drift,20px));}
-}
-.wallet-bar{
-  position:relative;z-index:10;
-  display:flex;justify-content:flex-end;align-items:center;
-  padding:14px 24px;gap:8px;
-  border-bottom:1px solid rgba(0,102,255,0.1);
-  background:rgba(3,5,15,0.8);backdrop-filter:blur(20px);
-}
-.net-pill{
-  display:none;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;
-  padding:6px 14px;border-radius:100px;
-  background:rgba(0,238,255,0.06);border:1px solid rgba(0,238,255,0.2);color:rgba(0,238,255,0.8);
-}
-.net-pill.on{display:block;}
-.net-pill.bad{background:rgba(255,80,80,0.08);border-color:rgba(255,80,80,0.3);color:#ff8080;}
-.glass-btn{
-  position:relative;overflow:hidden;
-  font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1.5px;
-  padding:10px 24px;border-radius:100px;
-  background:rgba(0,238,255,0.04);backdrop-filter:blur(16px);
-  border:1px solid rgba(0,238,255,0.3);color:var(--cyan);
-  cursor:pointer;transition:all .3s;text-transform:uppercase;
-}
-.glass-btn:hover{background:rgba(0,238,255,0.1);border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,238,255,0.2);}
-.connect-btn{
-  font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1.5px;
-  padding:10px 24px;border-radius:100px;
-  background:rgba(0,102,255,0.08);backdrop-filter:blur(16px);
-  border:1px solid rgba(0,238,255,0.35);color:var(--cyan);
-  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
-}
-.connect-btn:hover:not(:disabled){background:rgba(0,238,255,0.12);border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,238,255,0.18);}
-.connect-btn:disabled{cursor:not-allowed;opacity:0.7;border-color:rgba(0,238,255,0.15);}
-.wallet-connected{display:none;align-items:center;gap:0;}
+@keyframes floatUp{0%{opacity:0;transform:translateY(100vh)}10%{opacity:.6}90%{opacity:.2}100%{opacity:0;transform:translateY(-10vh) translateX(var(--drift,20px))}}
+
+/* ─── WALLET BAR ─── */
+.wallet-bar{position:relative;z-index:10;display:flex;justify-content:flex-end;align-items:center;padding:14px 24px;gap:8px;flex-wrap:wrap;border-bottom:1px solid rgba(0,102,255,0.1);background:rgba(3,5,15,0.8);backdrop-filter:blur(20px);}
+.net-pill{display:none;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:100px;background:rgba(0,238,255,0.06);border:1px solid rgba(0,238,255,0.2);color:rgba(0,238,255,0.8);}
+.net-pill.on{display:block;}.net-pill.bad{background:rgba(255,80,80,0.08);border-color:rgba(255,80,80,0.3);color:#ff8080;}
+.wallet-picker{display:flex;gap:8px;align-items:center;}
+.pick-btn{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1.2px;padding:9px 18px;border-radius:100px;backdrop-filter:blur(16px);cursor:pointer;transition:all .3s;border:1px solid;}
+.pick-evm{background:rgba(0,102,255,0.08);border-color:rgba(0,238,255,0.35);color:var(--cyan);}
+.pick-evm:hover:not(:disabled){background:rgba(0,238,255,0.12);border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,238,255,0.18);}
+.pick-near{background:rgba(0,180,110,0.08);border-color:rgba(0,210,120,0.35);color:#00dc82;}
+.pick-near:hover:not(:disabled){background:rgba(0,210,120,0.14);border-color:#00dc82;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,200,120,0.2);}
+.pick-btn:disabled{opacity:.5;cursor:not-allowed;}
+.wallet-connected{display:none;align-items:center;}
 .wallet-connected.on{display:flex;}
-.addr-pill{
-  font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1px;
-  padding:10px 18px;border-radius:100px 0 0 100px;
-  background:rgba(0,255,120,0.07);backdrop-filter:blur(16px);
-  border:1px solid rgba(0,255,120,0.25);border-right:none;color:#4ade80;
-}
-.disconnect-btn{
-  font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;
-  padding:10px 16px;border-radius:0 100px 100px 0;
-  background:rgba(255,80,80,0.07);backdrop-filter:blur(16px);
-  border:1px solid rgba(255,80,80,0.25);border-left:none;
-  color:#ff8080;cursor:pointer;transition:all .25s;
-}
-.disconnect-btn:hover{background:rgba(255,80,80,0.18);color:#ff6060;}
-.pending-banner{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 14px;width:100%;display:none;}
-.pending-banner.on{display:block;}
-.pending-inner{background:rgba(255,170,0,0.06);backdrop-filter:blur(16px);border:1px solid rgba(255,170,0,0.25);border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-.pending-text{font-size:13px;color:#ffcc44;font-weight:600;}
-.open-mm-btn{padding:8px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1.5px;border-radius:100px;cursor:pointer;background:rgba(255,170,0,0.1);backdrop-filter:blur(10px);border:1px solid rgba(255,170,0,0.3);color:#ffcc44;transition:all .25s;white-space:nowrap;}
-.open-mm-btn:hover{background:rgba(255,170,0,0.22);}
-.switch-banner{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 14px;width:100%;display:none;}
-.switch-banner.on{display:block;}
-.switch-inner{background:rgba(255,80,80,0.06);backdrop-filter:blur(16px);border:1px solid rgba(255,80,80,0.2);border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-.switch-text{font-size:13px;color:#ff8080;font-weight:600;}
-.switch-btn{padding:8px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1.5px;border-radius:100px;cursor:pointer;background:rgba(255,80,80,0.1);backdrop-filter:blur(10px);border:1px solid rgba(255,80,80,0.3);color:#ff8080;transition:all .25s;white-space:nowrap;}
-.switch-btn:hover{background:rgba(255,80,80,0.22);}
+.addr-pill{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1px;padding:10px 18px;border-radius:100px 0 0 100px;background:rgba(0,255,120,0.07);backdrop-filter:blur(16px);border:1px solid rgba(0,255,120,0.25);border-right:none;color:#4ade80;}
+.addr-pill.near-pill{background:rgba(0,210,120,0.07);border-color:rgba(0,210,120,0.3);color:#00dc82;}
+.disconnect-btn{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:10px 16px;border-radius:0 100px 100px 0;background:rgba(255,80,80,0.07);backdrop-filter:blur(16px);border:1px solid rgba(255,80,80,0.25);border-left:none;color:#ff8080;cursor:pointer;transition:all .25s;}
+.disconnect-btn:hover{background:rgba(255,80,80,0.18);}
+
+/* ─── BANNERS ─── */
+.banner{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 14px;width:100%;display:none;}
+.banner.on{display:block;}
+.banner-inner{backdrop-filter:blur(16px);border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.b-warn .banner-inner{background:rgba(255,170,0,0.06);border:1px solid rgba(255,170,0,0.25);}
+.b-err .banner-inner{background:rgba(255,80,80,0.06);border:1px solid rgba(255,80,80,0.2);}
+.b-near .banner-inner{background:rgba(0,210,120,0.06);border:1px solid rgba(0,210,120,0.2);}
+.banner-text{font-size:13px;font-weight:600;}
+.b-warn .banner-text{color:#ffcc44;}.b-err .banner-text{color:#ff8080;}.b-near .banner-text{color:#00dc82;}
+.banner-btn{padding:8px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1.5px;border-radius:100px;cursor:pointer;backdrop-filter:blur(10px);transition:all .25s;white-space:nowrap;border:1px solid;}
+.b-warn .banner-btn{background:rgba(255,170,0,0.1);border-color:rgba(255,170,0,0.3);color:#ffcc44;}
+.b-err  .banner-btn{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.3);color:#ff8080;}
+.b-near .banner-btn{background:rgba(0,210,120,0.1);border-color:rgba(0,210,120,0.3);color:#00dc82;}
+
+/* ─── NEAR MODAL ─── */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.on{display:flex;}
+.near-modal{background:rgba(6,10,28,0.98);border:1px solid rgba(0,210,120,0.3);border-radius:20px;padding:32px;max-width:400px;width:100%;position:relative;box-shadow:0 0 70px rgba(0,180,110,0.12);}
+.near-modal::before{content:'';position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(0,210,120,0.5),transparent);border-radius:20px 20px 0 0;}
+.nm-close{position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;}
+.nm-close:hover{color:#fff;}
+.nm-title{font-family:'Orbitron',monospace;font-size:14px;letter-spacing:2px;color:#00dc82;margin-bottom:4px;}
+.nm-sub{font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;}
+.nm-list{display:flex;flex-direction:column;gap:10px;}
+.nm-item{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:12px;background:rgba(0,210,120,0.04);border:1px solid rgba(0,210,120,0.12);cursor:pointer;transition:all .25s;}
+.nm-item:hover{background:rgba(0,210,120,0.1);border-color:rgba(0,210,120,0.4);transform:translateX(4px);}
+.nm-icon{width:36px;height:36px;border-radius:10px;object-fit:contain;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);padding:3px;flex-shrink:0;}
+.nm-name{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1px;color:#fff;}
+.nm-desc{font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;}
+.nm-divider{display:flex;align-items:center;gap:10px;margin:4px 0;}
+.nm-divider::before,.nm-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.06);}
+.nm-divider span{font-size:10px;color:rgba(255,255,255,0.2);letter-spacing:2px;white-space:nowrap;}
+.nm-wc-btn{width:100%;padding:12px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1.5px;border-radius:10px;background:rgba(88,101,242,0.07);border:1px solid rgba(88,101,242,0.25);color:#7289da;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.nm-wc-btn:hover{background:rgba(88,101,242,0.15);border-color:rgba(88,101,242,0.5);}
+
+/* ─── HERO ─── */
 .hero{position:relative;z-index:1;text-align:center;padding:40px 24px 24px;display:flex;flex-direction:column;align-items:center;gap:18px;}
 .logo-wrap{position:relative;display:inline-block;}
 .logo-ring{position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(0,238,255,0.25);animation:spin 12s linear infinite;}
 .logo-ring2{position:absolute;inset:-26px;border-radius:50%;border:1px dashed rgba(0,102,255,0.15);animation:spin 20s linear infinite reverse;}
 .logo-ring3{position:absolute;inset:-38px;border-radius:50%;border:1px solid rgba(155,109,255,0.08);animation:spin 30s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.logo-img{width:150px;height:150px;border-radius:50%;border:2px solid rgba(0,238,255,0.45);position:relative;z-index:1;object-fit:cover;box-shadow:0 0 0 4px rgba(0,238,255,0.06),0 0 35px rgba(0,238,255,0.35),0 0 80px rgba(0,102,255,0.25);animation:pulse 3s ease-in-out infinite;background:linear-gradient(135deg,#0066FF,#9B6DFF);}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(0,238,255,0.06),0 0 35px rgba(0,238,255,0.35),0 0 80px rgba(0,102,255,0.25);}50%{box-shadow:0 0 0 6px rgba(0,238,255,0.1),0 0 55px rgba(0,238,255,0.5),0 0 110px rgba(0,102,255,0.4);}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.logo-img{width:150px;height:150px;border-radius:50%;border:2px solid rgba(0,238,255,0.45);position:relative;z-index:1;object-fit:cover;box-shadow:0 0 35px rgba(0,238,255,0.35),0 0 80px rgba(0,102,255,0.25);animation:pulse 3s ease-in-out infinite;background:linear-gradient(135deg,#0066FF,#9B6DFF);}
+@keyframes pulse{0%,100%{box-shadow:0 0 35px rgba(0,238,255,0.35),0 0 80px rgba(0,102,255,0.25)}50%{box-shadow:0 0 55px rgba(0,238,255,0.5),0 0 110px rgba(0,102,255,0.4)}}
 .hero-title{font-family:'Orbitron',monospace;font-size:clamp(28px,6vw,52px);font-weight:900;letter-spacing:3px;background:linear-gradient(135deg,#00EEFF 0%,#0088FF 40%,#9B6DFF 70%,#FF6BFF 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;}
 .hero-sub{font-size:13px;color:rgba(0,238,255,0.55);letter-spacing:6px;font-weight:600;text-transform:uppercase;}
-.ca-pill{background:rgba(0,102,255,0.07);backdrop-filter:blur(12px);border:1px solid rgba(0,238,255,0.18);border-radius:100px;padding:10px 22px;font-family:'Orbitron',monospace;font-size:10px;color:rgba(0,238,255,0.65);letter-spacing:1px;cursor:pointer;transition:all .25s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;position:relative;}
+.ca-pill{background:rgba(0,102,255,0.07);backdrop-filter:blur(12px);border:1px solid rgba(0,238,255,0.18);border-radius:100px;padding:10px 22px;font-family:'Orbitron',monospace;font-size:10px;color:rgba(0,238,255,0.65);letter-spacing:1px;cursor:pointer;transition:all .25s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ca-pill:hover{background:rgba(0,238,255,0.1);border-color:rgba(0,238,255,0.45);color:var(--cyan);transform:scale(1.02);}
+
+/* ─── WALLET INFO ─── */
 .wallet-info{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 16px;width:100%;display:none;}
 .wallet-info.on{display:block;}
 .wcard{background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;position:relative;overflow:hidden;}
 .wcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,238,255,0.4),transparent);}
+.wcard.nc::before{background:linear-gradient(90deg,transparent,rgba(0,210,120,0.4),transparent);}
 .wcard-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2.5px;color:rgba(0,238,255,0.45);text-transform:uppercase;margin-bottom:14px;}
+.wcard.nc .wcard-title{color:rgba(0,210,120,0.55);}
 .wrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,102,255,0.08);gap:12px;}
 .wrow:last-child{border-bottom:none;padding-bottom:0;}
 .wkey{font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
 .wval{font-family:'Orbitron',monospace;font-size:12px;color:var(--cyan);text-align:right;word-break:break-all;}
-.wval.g{color:#4ade80;}.wval.warn{color:#ffcc44;}
+.wval.g{color:#4ade80;}.wval.warn{color:#ffcc44;}.wval.ng{color:#00dc82;}
+.badge{display:inline-block;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1.5px;padding:3px 10px;border-radius:100px;}
+.badge-evm{background:rgba(0,238,255,0.07);border:1px solid rgba(0,238,255,0.2);color:var(--cyan);}
+.badge-near{background:rgba(0,210,120,0.07);border:1px solid rgba(0,210,120,0.25);color:#00dc82;}
+
+/* ─── ACTIONS ─── */
 .actions{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 20px;width:100%;display:none;}
 .actions.on{display:block;}
 .sec-hd{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;color:rgba(0,238,255,0.4);text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(0,102,255,0.1);}
@@ -122,22 +113,23 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 .ac::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,238,255,0.2),transparent);}
 .ac-lbl{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
 .ai{width:100%;background:rgba(0,0,0,0.35);backdrop-filter:blur(8px);border:1px solid rgba(0,102,255,0.2);border-radius:10px;padding:10px 14px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;transition:all .25s;margin-bottom:10px;}
-.ai:focus{border-color:rgba(0,238,255,0.45);background:rgba(0,20,60,0.5);box-shadow:0 0 0 3px rgba(0,238,255,0.07);}
+.ai:focus{border-color:rgba(0,238,255,0.45);box-shadow:0 0 0 3px rgba(0,238,255,0.07);}
 .ai::placeholder{color:rgba(255,255,255,0.18);}
-.ab{width:100%;padding:11px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1.5px;font-weight:700;border-radius:10px;cursor:pointer;transition:all .3s;border:1px solid;backdrop-filter:blur(12px);position:relative;overflow:hidden;}
+.ab{width:100%;padding:11px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1.5px;font-weight:700;border-radius:10px;cursor:pointer;transition:all .3s;border:1px solid;backdrop-filter:blur(12px);}
 .ab-d{background:rgba(0,238,255,0.06);border-color:rgba(0,238,255,0.3);color:var(--cyan);}
 .ab-d:hover{background:rgba(0,238,255,0.14);border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,238,255,0.2);}
 .ab-w{background:rgba(255,100,100,0.06);border-color:rgba(255,100,100,0.28);color:#ff8080;}
-.ab-w:hover{background:rgba(255,100,100,0.16);border-color:#ff8080;transform:translateY(-2px);box-shadow:0 6px 24px rgba(255,80,80,0.18);}
+.ab-w:hover{background:rgba(255,100,100,0.16);border-color:#ff8080;transform:translateY(-2px);}
 .ab-t{background:rgba(155,109,255,0.06);border-color:rgba(155,109,255,0.28);color:#b89bff;}
-.ab-t:hover{background:rgba(155,109,255,0.16);border-color:#9B6DFF;transform:translateY(-2px);box-shadow:0 6px 24px rgba(155,109,255,0.18);}
+.ab-t:hover{background:rgba(155,109,255,0.16);border-color:#9B6DFF;transform:translateY(-2px);}
 .vibrate-flat{animation:vibrate-flat .3s ease!important;}
-@keyframes vibrate-flat{0%,100%{transform:translateX(0);}20%{transform:translateX(-3px);}40%{transform:translateX(3px);}60%{transform:translateX(-2px);}80%{transform:translateX(2px);}}
+@keyframes vibrate-flat{0%,100%{transform:translateX(0)}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
 .tm{margin-top:9px;font-size:11px;letter-spacing:1px;text-align:center;min-height:14px;display:none;}
-.tm.on{display:block;}
-.tm.ok{color:#4ade80;}.tm.err{color:#ff8080;}.tm.wait{color:var(--cyan);}
-@keyframes spin2{to{transform:rotate(360deg);}}
+.tm.on{display:block;}.tm.ok{color:#4ade80;}.tm.err{color:#ff8080;}.tm.wait{color:var(--cyan);}
+@keyframes spin2{to{transform:rotate(360deg)}}
 .sp{display:inline-block;width:10px;height:10px;border:1.5px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin2 .6s linear infinite;margin-right:6px;vertical-align:middle;}
+
+/* ─── STATS & FNS ─── */
 .stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 20px 20px;max-width:680px;margin:0 auto;width:100%;}
 .stat{background:var(--glass-bg);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:14px;padding:18px 10px;text-align:center;position:relative;overflow:hidden;transition:border-color .25s,transform .25s;}
 .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,238,255,0.35),transparent);}
@@ -146,32 +138,36 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 .sl{font-size:10px;color:rgba(255,255,255,0.28);letter-spacing:2px;margin-top:5px;text-transform:uppercase;}
 .fns{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 20px;}
 .fn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-.fn{background:var(--glass-bg);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;padding:15px 16px;transition:all .25s;position:relative;overflow:hidden;}
-.fn:hover{border-color:rgba(0,238,255,0.22);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,102,255,0.1);}
+.fn{background:var(--glass-bg);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;padding:15px 16px;transition:all .25s;}
+.fn:hover{border-color:rgba(0,238,255,0.22);transform:translateY(-2px);}
 .fn-nm{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:3px;}
 .fn-ds{font-size:11px;color:rgba(255,255,255,0.35);line-height:1.4;}
 .fb{display:inline-block;margin-top:7px;font-size:9px;letter-spacing:1.5px;padding:3px 10px;border-radius:100px;}
 .fb-p{background:rgba(0,255,120,0.06);color:#4ade80;border:1px solid rgba(0,255,120,0.2);}
 .fb-w{background:rgba(0,238,255,0.06);color:var(--cyan);border:1px solid rgba(0,238,255,0.2);}
 .fb-v{background:rgba(155,109,255,0.07);color:#b89bff;border:1px solid rgba(155,109,255,0.2);}
+
+/* ─── SOCIALS / FOOTER ─── */
 .socials{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 20px;display:flex;flex-direction:column;gap:12px;width:100%;}
-.don{display:flex;align-items:center;gap:14px;background:var(--glass-bg);backdrop-filter:blur(16px);border:1px solid rgba(0,238,255,0.15);border-radius:16px;padding:16px 22px;text-decoration:none;color:#fff;transition:all .25s;position:relative;overflow:hidden;}
-.don:hover{border-color:rgba(0,238,255,0.38);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,102,255,0.12);}
+.don{display:flex;align-items:center;gap:14px;background:var(--glass-bg);backdrop-filter:blur(16px);border:1px solid rgba(0,238,255,0.15);border-radius:16px;padding:16px 22px;text-decoration:none;color:#fff;transition:all .25s;}
+.don:hover{border-color:rgba(0,238,255,0.38);transform:translateY(-2px);}
 .don-lbl{flex:1;font-family:'Orbitron',monospace;font-size:12px;letter-spacing:1.5px;color:var(--cyan);}
 .srow{display:flex;gap:10px;}
-.sl2{flex:1;display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:14px;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1px;transition:all .25s;border:1px solid;backdrop-filter:blur(14px);position:relative;overflow:hidden;}
+.sl2{flex:1;display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:14px;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1px;transition:all .25s;border:1px solid;backdrop-filter:blur(14px);}
 .stw{background:rgba(0,0,0,0.35);border-color:rgba(255,255,255,0.09);color:rgba(255,255,255,0.75);}
 .stw:hover{border-color:rgba(255,255,255,0.28);color:#fff;transform:translateY(-2px);}
 .sdc{background:rgba(88,101,242,0.07);border-color:rgba(88,101,242,0.22);color:#7289da;}
 .sdc:hover{border-color:rgba(88,101,242,0.48);transform:translateY(-2px);}
-.bsvg{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}.bsvg svg{width:18px;height:18px;}
+.bsvg{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bsvg svg{width:18px;height:18px;}
 .footer{position:relative;z-index:1;text-align:center;padding:28px 20px;font-family:'Orbitron',monospace;font-size:9px;color:rgba(255,255,255,0.1);letter-spacing:3px;border-top:1px solid rgba(0,102,255,0.07);}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);z-index:100;background:rgba(8,13,32,0.9);backdrop-filter:blur(20px);border:1px solid rgba(0,238,255,0.25);border-radius:100px;padding:12px 26px;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1.5px;color:var(--cyan);opacity:0;transition:all .4s cubic-bezier(.25,.8,.25,1);pointer-events:none;white-space:nowrap;}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);z-index:300;background:rgba(8,13,32,0.92);backdrop-filter:blur(20px);border:1px solid rgba(0,238,255,0.25);border-radius:100px;padding:12px 26px;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1.5px;color:var(--cyan);opacity:0;transition:all .4s cubic-bezier(.25,.8,.25,1);pointer-events:none;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.success{border-color:rgba(74,222,128,0.35);color:#4ade80;}
 .toast.error{border-color:rgba(255,80,80,0.35);color:#ff8080;}
 .toast.warn{border-color:rgba(255,200,0,0.35);color:#ffcc44;}
-@media(max-width:480px){.ag{grid-template-columns:1fr;}.fn-grid{grid-template-columns:1fr;}.srow{flex-direction:column;}}
+.toast.near-t{border-color:rgba(0,210,120,0.35);color:#00dc82;}
+@media(max-width:480px){.ag,.fn-grid,.srow{grid-template-columns:1fr;flex-direction:column;}}
 </style>
 </head>
 <body>
@@ -180,34 +176,71 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 <div class="particles" id="particles"></div>
 <div class="toast" id="toast"></div>
 
+<!-- ═══ NEAR WALLET MODAL ═══ -->
+<div class="modal-overlay" id="nearOverlay" onclick="overlayClose(event)">
+  <div class="near-modal">
+    <button class="nm-close" onclick="closeNear()">✕</button>
+    <div class="nm-title">NEAR Wallet</div>
+    <div class="nm-sub">Connect to interact via NEAR</div>
+    <div class="nm-list">
+      <div class="nm-item" onclick="nearRedirect('my-near-wallet','MyNearWallet','https://mynearwallet.com')">
+        <img class="nm-icon" src="https://mynearwallet.com/favicon.ico" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect fill=%22%23001a33%22 width=%2232%22 height=%2232%22 rx=%228%22/%3E%3Ctext y=%2222%22 x=%228%22 font-size=%2216%22%3E🔗%3C/text%3E%3C/svg%3E'" alt="MyNearWallet"/>
+        <div><div class="nm-name">MyNearWallet</div><div class="nm-desc">Web &amp; mobile · Official NEAR wallet</div></div>
+      </div>
+      <div class="nm-item" onclick="nearRedirect('here-wallet','HERE Wallet','https://herewallet.app')">
+        <img class="nm-icon" src="https://herewallet.app/favicon.ico" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect fill=%22%23001a33%22 width=%2232%22 height=%2232%22 rx=%228%22/%3E%3Ctext y=%2222%22 x=%228%22 font-size=%2216%22%3E📱%3C/text%3E%3C/svg%3E'" alt="HERE"/>
+        <div><div class="nm-name">HERE Wallet</div><div class="nm-desc">Mobile · WalletConnect support</div></div>
+      </div>
+      <div class="nm-item" onclick="nearRedirect('meteor-wallet','Meteor Wallet','https://wallet.meteorwallet.app')">
+        <img class="nm-icon" src="https://wallet.meteorwallet.app/favicon.ico" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect fill=%22%23001a33%22 width=%2232%22 height=%2232%22 rx=%228%22/%3E%3Ctext y=%2222%22 x=%228%22 font-size=%2216%22%3E☄️%3C/text%3E%3C/svg%3E'" alt="Meteor"/>
+        <div><div class="nm-name">Meteor Wallet</div><div class="nm-desc">Feature-rich NEAR browser wallet</div></div>
+      </div>
+      <div class="nm-divider"><span>OR SCAN WITH ANY NEAR WALLET</span></div>
+      <button class="nm-wc-btn" onclick="openWalletConnect()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4.914 7.519c3.914-3.914 10.257-3.914 14.171 0l.471.471a.485.485 0 010 .685l-1.612 1.612a.255.255 0 01-.361 0l-.647-.647c-2.73-2.73-7.158-2.73-9.889 0l-.694.694a.255.255 0 01-.361 0L4.38 8.722a.485.485 0 010-.685l.534-.518zm17.504 3.265l1.435 1.435a.485.485 0 010 .685l-6.474 6.474a.484.484 0 01-.685 0l-4.596-4.596a.127.127 0 00-.18 0l-4.596 4.596a.484.484 0 01-.685 0L.163 12.904a.485.485 0 010-.685l1.435-1.435a.484.484 0 01.685 0l4.596 4.596a.127.127 0 00.18 0l4.596-4.596a.484.484 0 01.685 0l4.596 4.596a.127.127 0 00.18 0l4.596-4.596a.484.484 0 01.685 0z"/></svg>
+        WalletConnect QR (HERE, Ledger…)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ WALLET BAR ═══ -->
 <div class="wallet-bar">
   <div class="net-pill" id="netPill"></div>
-  <button class="connect-btn" id="connectBtn" onclick="handleConnectClick()">Connect Wallet</button>
-  <div class="wallet-connected" id="walletConnected">
-    <div class="addr-pill" id="addrPill"></div>
-    <button class="disconnect-btn" onclick="vibrateBtn(this);disconnectWallet()">Disconnect</button>
+  <div class="wallet-picker" id="walletPicker">
+    <button class="pick-btn pick-evm" id="evmBtn" onclick="handleEvm()">EVM Wallet</button>
+    <button class="pick-btn pick-near" id="nearBtn" onclick="openNear()">NEAR Wallet</button>
+  </div>
+  <div class="wallet-connected" id="walletConn">
+    <div class="addr-pill" id="addrPill">—</div>
+    <button class="disconnect-btn" onclick="vibrateBtn(this);disconnect()">Disconnect</button>
   </div>
 </div>
 
-<div class="pending-banner" id="pendingBanner">
-  <div class="pending-inner">
-    <div class="pending-text">⏳ MetaMask has a pending request — open MetaMask to approve or reject it</div>
-    <button class="open-mm-btn" onclick="retryConnect()">Retry Connection</button>
+<!-- banners -->
+<div class="banner b-warn" id="bPending">
+  <div class="banner-inner">
+    <div class="banner-text">⏳ MetaMask has a pending request — open MetaMask to approve or reject</div>
+    <button class="banner-btn" onclick="retryEvm()">Retry</button>
+  </div>
+</div>
+<div class="banner b-err" id="bSwitch">
+  <div class="banner-inner">
+    <div class="banner-text">⚠️ Wrong network — switch to Monad Mainnet (Chain ID 143)</div>
+    <button class="banner-btn" onclick="vibrateBtn(this);switchMonad()">Switch Network</button>
+  </div>
+</div>
+<div class="banner b-near" id="bNear">
+  <div class="banner-inner">
+    <div class="banner-text">🟢 NEAR wallet connected · Use EVM wallet for Monad write transactions</div>
+    <button class="banner-btn" onclick="document.getElementById('bNear').classList.remove('on')">Got it</button>
   </div>
 </div>
 
-<div class="switch-banner" id="switchBanner">
-  <div class="switch-inner">
-    <div class="switch-text">Wrong network — switch to Monad Mainnet (Chain ID 143)</div>
-    <button class="switch-btn" onclick="vibrateBtn(this);switchToMonad()">Switch Network</button>
-  </div>
-</div>
-
+<!-- ═══ HERO ═══ -->
 <div class="hero">
   <div class="logo-wrap">
-    <div class="logo-ring"></div>
-    <div class="logo-ring2"></div>
-    <div class="logo-ring3"></div>
+    <div class="logo-ring"></div><div class="logo-ring2"></div><div class="logo-ring3"></div>
     <img class="logo-img"
       src="https://raw.githubusercontent.com/00impera/wBASEwrapped/master/logo.png"
       onerror="this.src='https://monadvision.com/images/tokens/0x2cE8C8F4961a54B2e87585f4178467006B76B418.png';this.onerror=null;"
@@ -215,20 +248,21 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   </div>
   <div class="hero-title">Wrapped Base</div>
   <div class="hero-sub">wBASE · Monad Mainnet</div>
-  <div class="ca-pill" id="caBtn" onclick="vibrateBtn(this);copyCA(this)">
-    0x571c49484966dE336C74AEc98A5FF18e701E58Fe
-  </div>
+  <div class="ca-pill" id="caBtn" onclick="vibrateBtn(this);copyCA(this)">0x571c49484966dE336C74AEc98A5FF18e701E58Fe</div>
 </div>
 
+<!-- wallet info -->
 <div class="wallet-info" id="walletInfo">
-  <div class="wcard">
-    <div class="wcard-title">Connected Wallet</div>
-    <div class="wrow"><span class="wkey">Address</span><span class="wval" id="wAddr" style="font-size:11px;"></span></div>
+  <div class="wcard" id="wCard">
+    <div class="wcard-title" id="wCardTitle">Connected Wallet</div>
+    <div class="wrow"><span class="wkey">Type</span><span class="wval" id="wType">—</span></div>
+    <div class="wrow"><span class="wkey">Address</span><span class="wval" id="wAddr" style="font-size:11px;">—</span></div>
     <div class="wrow"><span class="wkey">MON Balance</span><span class="wval g" id="wMON">—</span></div>
     <div class="wrow"><span class="wkey">BASE Balance</span><span class="wval g" id="wBASE">—</span></div>
   </div>
 </div>
 
+<!-- actions -->
 <div class="actions" id="actionsPanel">
   <div class="sec-hd">Interact with Contract</div>
   <div class="ag">
@@ -244,7 +278,7 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
       <button class="ab ab-w" onclick="vibrateBtn(this);doWithdraw()">Withdraw</button>
       <div class="tm" id="wdMsg"></div>
     </div>
-    <div class="ac" style="grid-column:span 2;">
+    <div class="ac" style="grid-column:span 2">
       <div class="ac-lbl">Transfer BASE to Address</div>
       <input class="ai" id="trTo" type="text" placeholder="Recipient 0x..."/>
       <input class="ai" id="trAmt" type="number" placeholder="Amount BASE" min="0" step="0.001"/>
@@ -254,12 +288,14 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   </div>
 </div>
 
+<!-- stats -->
 <div class="stats">
   <div class="stat"><div class="sv">143</div><div class="sl">Chain ID</div></div>
   <div class="stat"><div class="sv">BASE</div><div class="sl">Symbol</div></div>
   <div class="stat"><div class="sv">18</div><div class="sl">Decimals</div></div>
 </div>
 
+<!-- functions -->
 <div class="fns">
   <div class="sec-hd">Contract Functions</div>
   <div class="fn-grid">
@@ -274,11 +310,12 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
   </div>
 </div>
 
+<!-- socials -->
 <div class="socials">
   <a class="don" href="https://monadvision.com/token/0x571c49484966dE336C74AEc98A5FF18e701E58Fe?tab=Contract" target="_blank" rel="noopener">
-    <span style="font-size:20px;">👉⛽👈</span>
+    <span style="font-size:20px">👉⛽👈</span>
     <span class="don-lbl">Donate · View Contract</span>
-    <span style="color:rgba(0,238,255,0.4);font-size:20px;">→</span>
+    <span style="color:rgba(0,238,255,0.4);font-size:20px">→</span>
   </a>
   <div class="srow">
     <a class="sl2 stw" href="https://x.com/bnbgold277983" target="_blank" rel="noopener">
@@ -296,30 +333,33 @@ body{background:var(--dark);color:#fff;font-family:'Rajdhani',sans-serif;min-hei
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
-// ── PARTICLES ──
-(function(){
+// ═══════════════════════════════════════════════════════
+//  PARTICLES
+// ═══════════════════════════════════════════════════════
+(()=>{
   const c=document.getElementById('particles');
   for(let i=0;i<28;i++){
     const p=document.createElement('div');
     p.className='particle';
-    p.style.cssText=`left:${Math.random()*100}%;--dur:${6+Math.random()*10}s;--delay:${Math.random()*10}s;--drift:${(Math.random()-0.5)*80}px;`;
+    p.style.cssText=`left:${Math.random()*100}%;--dur:${6+Math.random()*10}s;--delay:${Math.random()*10}s;--drift:${(Math.random()-.5)*80}px;`;
     if(Math.random()>.5) p.style.background='rgba(155,109,255,0.7)';
     c.appendChild(p);
   }
 })();
 
-// ── CONFIG ──
-const CA = '0x571c49484966dE336C74AEc98A5FF18e701E58Fe';
+// ═══════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════
+const CA           = '0x571c49484966dE336C74AEc98A5FF18e701E58Fe';
 const CHAIN_ID_DEC = 143;
-const CHAIN_HEX = '0x8F';
-const RPC_URL = 'https://rpc.monad.xyz';
+const CHAIN_HEX    = '0x8F';
+const RPC_URL      = 'https://rpc.monad.xyz';
+const REOWN_ID     = '83764e5a442fd38d9827e3302a37517a';
 
 const MONAD_PARAMS = {
-  chainId: CHAIN_HEX,
-  chainName: 'Monad Mainnet',
-  nativeCurrency: { name:'MON', symbol:'MON', decimals:18 },
-  rpcUrls: [RPC_URL],
-  blockExplorerUrls: ['https://monadscan.com']
+  chainId: CHAIN_HEX, chainName:'Monad Mainnet',
+  nativeCurrency:{ name:'MON', symbol:'MON', decimals:18 },
+  rpcUrls:[RPC_URL], blockExplorerUrls:['https://monadscan.com']
 };
 
 const ABI = [
@@ -330,429 +370,396 @@ const ABI = [
   'function approve(address guy, uint256 wad) returns (bool)',
   'function balanceOf(address) view returns (uint256)',
   'function allowance(address, address) view returns (uint256)',
-  'function totalSupply() view returns (uint256)',
-  'function name() view returns (string)',
-  'function symbol() view returns (string)',
-  'function decimals() view returns (uint8)'
+  'function totalSupply() view returns (uint256)'
 ];
 
-// ── STATE ──
-let addr = null;
-let isConnecting = false;
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let addr       = null;
+let walletMode = null; // 'evm' | 'near'
+let isConn     = false;
 
-// ─────────────────────────────────────────────────────────────
-// ROOT FIX: Monad's RPC returns non-standard tx response fields
-// (missing gasPrice, v, r, s etc.) which causes ethers v5's
-// transactionResponse formatter to throw "invalid BigNumber string"
-// on undefined values.
-//
-// Strategy:
-//   1. Use a JsonRpcProvider pointed at Monad's RPC for READ ops
-//      (balances, etc.) — avoids MetaMask's formatter entirely.
-//   2. For WRITE ops we still need MetaMask to sign, but we bypass
-//      ethers' tx-response parsing by calling eth_sendTransaction
-//      via raw RPC and then polling for the receipt ourselves.
-// ─────────────────────────────────────────────────────────────
-
-// Read-only provider: direct JSON-RPC, no MetaMask involved
-function getReadProvider() {
-  return new ethers.providers.JsonRpcProvider(RPC_URL, {
-    chainId: CHAIN_ID_DEC,
-    name: 'monad'
-  });
-}
-
-// Returns ethers Interface for ABI encoding
+// ═══════════════════════════════════════════════════════
+//  EVM — direct RPC (bypasses ethers formatter Monad bug)
+// ═══════════════════════════════════════════════════════
 const iface = new ethers.utils.Interface(ABI);
+function rpc(){ return new ethers.providers.JsonRpcProvider(RPC_URL,{chainId:CHAIN_ID_DEC,name:'monad'}); }
+function ct(){ return new ethers.Contract(CA,ABI,rpc()); }
 
-// Send a write tx via MetaMask raw RPC (avoids ethers formatter bug).
-// Returns txHash string or throws.
-async function sendRawTx(to, data, valueHex) {
-  const params = {
-    from: addr,
-    to,
-    data,
-    ...(valueHex ? { value: valueHex } : {})
-    // No gasLimit here — let MetaMask estimate. If that fails we add
-    // fallback below.
-  };
-  return await window.ethereum.request({
-    method: 'eth_sendTransaction',
-    params: [params]
-  });
+async function rawTx(to, data, valueHex){
+  const p={from:addr, to, data, ...(valueHex?{value:valueHex}:{})};
+  return window.ethereum.request({method:'eth_sendTransaction',params:[p]});
 }
 
-// Poll for receipt until mined (max ~2 min).
-async function waitForReceipt(txHash, timeoutMs = 120000) {
-  const provider = getReadProvider();
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    try {
-      const receipt = await provider.getTransactionReceipt(txHash);
-      if (receipt) return receipt;
-    } catch(e) { /* keep polling */ }
-    await new Promise(r => setTimeout(r, 2000));
+async function waitReceipt(hash, ms=120000){
+  const r=rpc(); const t=Date.now();
+  while(Date.now()-t<ms){
+    try{ const rc=await r.getTransactionReceipt(hash); if(rc) return rc; }catch(e){}
+    await new Promise(r=>setTimeout(r,2000));
   }
-  throw new Error('Transaction timeout — check explorer');
+  throw new Error('Timeout — check explorer');
 }
 
-function getReadContract() {
-  return new ethers.Contract(CA, ABI, getReadProvider());
+// ═══════════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════════
+function toast(m,t=''){
+  const el=document.getElementById('toast');
+  el.textContent=m;
+  el.className='toast show'+({ok:' success',err:' error',warn:' warn',near:' near-t'}[t]||'');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('show'),3500);
 }
 
-// ── TOAST ──
-function showToast(msg, type='info') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + (type==='ok'?'success':type==='err'?'error':type==='warn'?'warn':'');
-  clearTimeout(t._to);
-  t._to = setTimeout(() => t.classList.remove('show'), 3200);
+function vibrateBtn(el){
+  if(navigator.vibrate)navigator.vibrate([30]);
+  el.classList.remove('vibrate-flat');void el.offsetWidth;
+  el.classList.add('vibrate-flat');setTimeout(()=>el.classList.remove('vibrate-flat'),350);
 }
 
-// ── VIBRATE ──
-function vibrateBtn(el) {
-  if(navigator.vibrate) navigator.vibrate([30]);
-  el.classList.remove('vibrate-flat');
-  void el.offsetWidth;
-  el.classList.add('vibrate-flat');
-  setTimeout(() => el.classList.remove('vibrate-flat'), 350);
+function copyCA(el){
+  navigator.clipboard.writeText(CA).then(()=>{
+    el.textContent='✓ Copied!';toast('Contract address copied!','ok');
+    setTimeout(()=>el.textContent=CA,2000);
+  }).catch(()=>{el.textContent='Copy failed';setTimeout(()=>el.textContent=CA,1500);});
 }
 
-// ── COPY CA ──
-function copyCA(el) {
-  navigator.clipboard.writeText(CA).then(() => {
-    el.textContent = '✓ Copied!';
-    showToast('Contract address copied!', 'ok');
-    setTimeout(() => el.textContent = CA, 2000);
-  }).catch(() => {
-    el.textContent = 'Copy failed';
-    setTimeout(() => el.textContent = CA, 1500);
-  });
+function setMsg(id,text,type){
+  const el=document.getElementById(id);
+  el.innerHTML=(type==='wait'?'<span class="sp"></span>':'')+text;
+  el.className='tm on '+type;
+  if(type==='ok') toast(text,'ok');
+  if(type==='err') toast(text,'err');
 }
 
-// ── STATUS MSG ──
-function msg(id, text, type) {
-  const el = document.getElementById(id);
-  el.innerHTML = (type==='wait' ? '<span class="sp"></span>' : '') + text;
-  el.className = 'tm on ' + type;
-  if(type==='ok') showToast(text, 'ok');
-  if(type==='err') showToast(text, 'err');
+// ═══════════════════════════════════════════════════════
+//  CONNECTED / DISCONNECTED UI
+// ═══════════════════════════════════════════════════════
+function showConn(a, mode){
+  addr=a; walletMode=mode;
+  document.getElementById('walletPicker').style.display='none';
+  document.getElementById('walletConn').classList.add('on');
+  const pill=document.getElementById('addrPill');
+  pill.textContent=a.length>20 ? a.slice(0,8)+'...'+a.slice(-6) : a;
+  pill.className='addr-pill'+(mode==='near'?' near-pill':'');
+
+  const isNear=mode==='near';
+  const card=document.getElementById('wCard');
+  card.className='wcard'+(isNear?' nc':'');
+  document.getElementById('wCardTitle').textContent=isNear?'Connected · NEAR Wallet':'Connected · EVM Wallet';
+  document.getElementById('wType').innerHTML=isNear
+    ?'<span class="badge badge-near">NEAR via EVM Bridge</span>'
+    :'<span class="badge badge-evm">EVM / MetaMask</span>';
+  document.getElementById('walletInfo').classList.add('on');
+  document.getElementById('actionsPanel').classList.add('on');
 }
 
-// ── CONNECT STATE ──
-function setConnectingState(connecting) {
-  isConnecting = connecting;
-  const btn = document.getElementById('connectBtn');
-  if(connecting) {
-    btn.disabled = true;
-    btn.innerHTML = '<span class="sp" style="border-color:var(--cyan);border-top-color:transparent;width:9px;height:9px;margin-right:8px;"></span>Connecting...';
-  } else {
-    btn.disabled = false;
-    btn.textContent = 'Connect Wallet';
-  }
-}
-
-function showConnectedUI(a) {
-  document.getElementById('connectBtn').style.display = 'none';
-  const wc = document.getElementById('walletConnected');
-  wc.classList.add('on');
-  document.getElementById('addrPill').textContent = a.slice(0,6)+'...'+a.slice(-4);
-  document.getElementById('pendingBanner').classList.remove('on');
-  showToast('Wallet connected', 'ok');
-}
-
-function showDisconnected() {
-  document.getElementById('connectBtn').style.display = 'block';
-  document.getElementById('walletConnected').classList.remove('on');
+function showDisc(){
+  addr=null; walletMode=null; isConn=false;
+  document.getElementById('walletPicker').style.display='flex';
+  document.getElementById('walletConn').classList.remove('on');
   document.getElementById('netPill').classList.remove('on','bad');
   document.getElementById('walletInfo').classList.remove('on');
   document.getElementById('actionsPanel').classList.remove('on');
-  document.getElementById('switchBanner').classList.remove('on');
-  document.getElementById('pendingBanner').classList.remove('on');
-  isConnecting = false;
-  setConnectingState(false);
-  addr = null;
-  showToast('Wallet disconnected');
+  document.getElementById('bSwitch').classList.remove('on');
+  document.getElementById('bPending').classList.remove('on');
+  document.getElementById('bNear').classList.remove('on');
+  document.getElementById('evmBtn').disabled=false;
+  document.getElementById('evmBtn').textContent='EVM Wallet';
+  toast('Wallet disconnected');
 }
 
-function disconnectWallet() { showDisconnected(); }
-
-// ── CONNECT ──
-function handleConnectClick() {
-  if(isConnecting) {
-    showToast('MetaMask request pending — check MetaMask', 'warn');
-    document.getElementById('pendingBanner').classList.add('on');
-    return;
-  }
-  vibrateBtn(document.getElementById('connectBtn'));
-  connectWallet();
+function disconnect(){
+  if(walletMode==='near') sessionStorage.removeItem('nearAcc');
+  showDisc();
 }
 
-function retryConnect() {
-  isConnecting = false;
-  document.getElementById('pendingBanner').classList.remove('on');
-  setConnectingState(false);
-  connectWallet();
+// ═══════════════════════════════════════════════════════
+//  EVM CONNECT
+// ═══════════════════════════════════════════════════════
+function handleEvm(){
+  if(isConn){toast('Pending MetaMask request','warn');return;}
+  vibrateBtn(document.getElementById('evmBtn'));
+  connectEvm();
 }
-
-async function connectWallet() {
-  if(!window.ethereum) {
-    showToast('MetaMask not found — install it first', 'err');
-    return;
-  }
-  if(isConnecting) return;
-  setConnectingState(true);
-
-  try {
-    const accounts = await window.ethereum.request({ method:'eth_requestAccounts' });
-    addr = accounts[0];
-
-    setConnectingState(false);
-    showConnectedUI(addr);
-
-    window.ethereum.removeListener('accountsChanged', onAccountsChanged);
-    window.ethereum.removeListener('chainChanged', onChainChanged);
-    window.ethereum.on('accountsChanged', onAccountsChanged);
-    window.ethereum.on('chainChanged', onChainChanged);
-
+function retryEvm(){
+  isConn=false;
+  document.getElementById('bPending').classList.remove('on');
+  document.getElementById('evmBtn').disabled=false;
+  document.getElementById('evmBtn').textContent='EVM Wallet';
+  connectEvm();
+}
+async function connectEvm(){
+  if(!window.ethereum){toast('MetaMask not found','err');return;}
+  if(isConn) return;
+  isConn=true;
+  const btn=document.getElementById('evmBtn');
+  btn.disabled=true; btn.innerHTML='<span class="sp"></span>Connecting...';
+  try{
+    const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+    isConn=false; btn.disabled=false; btn.textContent='EVM Wallet';
+    showConn(accounts[0],'evm');
+    window.ethereum.removeListener('accountsChanged',onAcct);
+    window.ethereum.removeListener('chainChanged',onChain);
+    window.ethereum.on('accountsChanged',onAcct);
+    window.ethereum.on('chainChanged',onChain);
     await checkNet();
-
-  } catch(e) {
-    setConnectingState(false);
-    if(e.code === -32002) {
-      document.getElementById('pendingBanner').classList.add('on');
-      showToast('Open MetaMask to approve the pending request', 'warn');
-    } else if(e.code === 4001) {
-      showToast('Connection rejected by user', 'err');
-    } else {
-      showToast('Connection failed — check MetaMask', 'err');
-      console.error(e);
-    }
+    toast('EVM wallet connected','ok');
+  }catch(e){
+    isConn=false; btn.disabled=false; btn.textContent='EVM Wallet';
+    if(e.code===-32002){document.getElementById('bPending').classList.add('on');toast('Open MetaMask to approve','warn');}
+    else if(e.code===4001) toast('Rejected','err');
+    else toast('Connection failed','err');
   }
 }
+function onAcct(a){ if(!a.length){showDisc();return;} addr=a[0]; document.getElementById('addrPill').textContent=a[0].slice(0,6)+'...'+a[0].slice(-4); checkNet(); }
+function onChain(){ checkNet(); }
 
-function onAccountsChanged(accounts) {
-  if(accounts.length === 0) {
-    showDisconnected();
-  } else {
-    addr = accounts[0];
-    document.getElementById('addrPill').textContent = addr.slice(0,6)+'...'+addr.slice(-4);
-    checkNet();
-  }
+async function checkNet(){
+  if(!addr||walletMode!=='evm') return;
+  const hex=await window.ethereum.request({method:'eth_chainId'});
+  const ok=parseInt(hex,16)===CHAIN_ID_DEC;
+  const p=document.getElementById('netPill');
+  p.classList.add('on');
+  if(ok){ p.textContent='Monad Mainnet';p.classList.remove('bad');document.getElementById('bSwitch').classList.remove('on');await loadBal(); }
+  else { p.textContent='Wrong Network';p.classList.add('bad');document.getElementById('bSwitch').classList.add('on');toast('Switch to Monad Mainnet','err'); }
 }
 
-function onChainChanged() { checkNet(); }
-
-// ── NETWORK CHECK ──
-async function checkNet() {
-  if(!addr) return;
-  const chainIdHex = await window.ethereum.request({ method:'eth_chainId' });
-  const onCorrectChain = parseInt(chainIdHex, 16) === CHAIN_ID_DEC;
-
-  const pill = document.getElementById('netPill');
-  pill.classList.add('on');
-
-  if(onCorrectChain) {
-    pill.textContent = 'Monad Mainnet';
-    pill.classList.remove('bad');
-    document.getElementById('switchBanner').classList.remove('on');
-    document.getElementById('walletInfo').classList.add('on');
-    document.getElementById('actionsPanel').classList.add('on');
-    await loadBal();
-  } else {
-    pill.textContent = 'Wrong Network';
-    pill.classList.add('bad');
-    document.getElementById('switchBanner').classList.add('on');
-    document.getElementById('walletInfo').classList.remove('on');
-    document.getElementById('actionsPanel').classList.remove('on');
-    showToast('Switch to Monad Mainnet', 'err');
-  }
+async function switchMonad(){
+  try{ await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:CHAIN_HEX}]}); }
+  catch(e){ if(e.code===4902){ try{ await window.ethereum.request({method:'wallet_addEthereumChain',params:[MONAD_PARAMS]}); }catch(ae){toast('Failed to add network','err');} } }
 }
 
-// ── SWITCH NETWORK ──
-async function switchToMonad() {
-  try {
-    await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: CHAIN_HEX }]
-    });
-  } catch(e) {
-    if(e.code === 4902) {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [MONAD_PARAMS]
-        });
-      } catch(addErr) {
-        showToast('Failed to add Monad network', 'err');
+// ═══════════════════════════════════════════════════════
+//  NEAR MODAL
+// ═══════════════════════════════════════════════════════
+function openNear(){ vibrateBtn(document.getElementById('nearBtn')); document.getElementById('nearOverlay').classList.add('on'); }
+function closeNear(){ document.getElementById('nearOverlay').classList.remove('on'); }
+function overlayClose(e){ if(e.target===document.getElementById('nearOverlay')) closeNear(); }
+
+// ─── NEAR: redirect flow (wallet redirect sign-in) ───────
+// Standard NEAR wallet connect pattern:
+//   1. Redirect user to wallet sign-in URL with success_url = current page
+//   2. Wallet redirects back with ?account_id=... in query string
+//   3. We read the param and consider the user connected
+function nearRedirect(id, name, base){
+  closeNear();
+  toast('Opening '+name+'…','near');
+  const cb   = encodeURIComponent(location.href.split('?')[0]+'?near_cb=1');
+  const urls = {
+    'my-near-wallet': `https://mynearwallet.com/login/?title=${encodeURIComponent('wBASE on Monad')}&success_url=${cb}&failure_url=${cb}`,
+    'here-wallet':    `https://h4n.app/sign-in?title=${encodeURIComponent('wBASE on Monad')}&success_url=${cb}`,
+    'meteor-wallet':  `https://wallet.meteorwallet.app/login?title=${encodeURIComponent('wBASE on Monad')}&success_url=${cb}`
+  };
+  const url = urls[id] || `${base}/login/?success_url=${cb}`;
+  // Open in same tab so the redirect comes back here
+  location.href = url;
+}
+
+// ─── NEAR: WalletConnect via Reown ───────────────────────
+// Uses the WalletConnect universal-provider to open a QR modal
+// that NEAR-compatible mobile wallets (HERE, etc.) can scan.
+async function openWalletConnect(){
+  closeNear();
+  toast('Loading WalletConnect…','near');
+  try{
+    // Dynamically import WalletConnect (ES module via CDN)
+    const [{ UniversalProvider }, { WalletConnectModal }] = await Promise.all([
+      import('https://esm.sh/@walletconnect/universal-provider@2.19.2'),
+      import('https://esm.sh/@walletconnect/modal@2.7.0')
+    ]);
+
+    const provider = await UniversalProvider.init({
+      projectId: REOWN_ID,
+      metadata:{
+        name:'wBASE on Monad',
+        description:'Wrapped Base token dApp on Monad Mainnet',
+        url: location.origin,
+        icons:[location.origin+'/favicon.ico']
       }
-    }
+    });
+
+    const modal = new WalletConnectModal({ projectId: REOWN_ID });
+
+    // Show QR when URI is ready
+    provider.on('display_uri', uri=>{ modal.openModal({uri}); });
+
+    // Connect requesting NEAR namespace
+    await provider.connect({
+      namespaces:{
+        near:{
+          methods:['near_signAndSendTransaction','near_signAndSendTransactions','near_signMessage'],
+          chains:['near:mainnet'],
+          events:['chainChanged','accountsChanged']
+        }
+      }
+    });
+    modal.closeModal();
+
+    const accts = provider.session?.namespaces?.near?.accounts || [];
+    if(!accts.length) throw new Error('No NEAR accounts returned');
+    // account format: "near:mainnet:account.near"
+    const accountId = accts[0].split(':')[2] || accts[0];
+    handleNearConn(accountId);
+  }catch(e){
+    console.error('WalletConnect/NEAR error:',e);
+    toast('WalletConnect failed — try redirect method','err');
   }
 }
 
-// ── BALANCES (uses direct RPC provider — no MetaMask formatter) ──
-async function loadBal() {
-  if(!addr) return;
-
-  const provider = getReadProvider();
-  const ct = getReadContract();
-
-  let monBal = ethers.BigNumber.from(0);
-  try { monBal = await provider.getBalance(addr); }
-  catch(e) { console.warn('getBalance failed:', e.message); }
-
-  let baseBal = ethers.BigNumber.from(0);
-  let baseOk = false;
-  try {
-    baseBal = await ct.balanceOf(addr);
-    baseOk = true;
-  } catch(e) {
-    console.warn('balanceOf failed:', e.message);
+// ─── Check for NEAR callback in URL (after redirect sign-in) ─
+function checkNearCb(){
+  const p = new URLSearchParams(location.search);
+  const accountId = p.get('account_id');
+  const cb        = p.get('near_cb');
+  if(accountId){
+    // Clean URL
+    history.replaceState({},'',location.pathname);
+    handleNearConn(accountId);
+  } else if(cb){
+    // Redirected back but no account — user cancelled
+    history.replaceState({},'',location.pathname);
+    toast('NEAR sign-in cancelled','warn');
   }
-
-  document.getElementById('wAddr').textContent = addr.slice(0,10)+'...'+addr.slice(-6);
-  document.getElementById('wMON').textContent =
-    parseFloat(ethers.utils.formatEther(monBal)).toFixed(4) + ' MON';
-
-  const baseEl = document.getElementById('wBASE');
-  if(baseOk) {
-    baseEl.textContent = parseFloat(ethers.utils.formatEther(baseBal)).toFixed(4) + ' BASE';
-    baseEl.className = 'wval g';
-  } else {
-    baseEl.textContent = '0.0000 BASE (read error)';
-    baseEl.className = 'wval warn';
-  }
+  // Also restore from session storage if page refreshed
+  const saved = sessionStorage.getItem('nearAcc');
+  if(!accountId && saved) handleNearConn(saved, true);
 }
 
-// ── PRE-FLIGHT BALANCE CHECK ──
-async function checkBaseBalance(amountWei) {
-  try {
-    const ct = getReadContract();
-    const bal = await ct.balanceOf(addr);
-    if(bal.lt(amountWei)) {
-      const have = parseFloat(ethers.utils.formatEther(bal)).toFixed(4);
-      const need = parseFloat(ethers.utils.formatEther(amountWei)).toFixed(4);
-      return `Insufficient BASE: have ${have}, need ${need}`;
+function handleNearConn(accountId, restored=false){
+  sessionStorage.setItem('nearAcc', accountId);
+  showConn(accountId, 'near');
+
+  const pill=document.getElementById('netPill');
+  pill.classList.add('on');
+  pill.textContent='NEAR · EVM Bridge';
+  pill.classList.remove('bad');
+
+  document.getElementById('bNear').classList.add('on');
+
+  if(!restored) toast('NEAR connected: '+accountId,'near');
+  loadNearBal(accountId);
+}
+
+// ─── NEAR balance: query NEAR RPC ────────────────────────
+async function loadNearBal(accountId){
+  document.getElementById('wAddr').textContent = accountId;
+
+  // Fetch NEAR native balance via JSON-RPC
+  try{
+    const res = await fetch('https://rpc.mainnet.near.org',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        jsonrpc:'2.0', id:1, method:'query',
+        params:{ request_type:'view_account', finality:'final', account_id:accountId }
+      })
+    });
+    const data = await res.json();
+    if(data.result && data.result.amount){
+      // amount is in yoctoNEAR (1e24)
+      const near = (BigInt(data.result.amount) / BigInt('1000000000000000000000000')).toString();
+      document.getElementById('wMON').textContent = near + ' NEAR';
+    } else {
+      document.getElementById('wMON').textContent = '— (account not found)';
     }
-  } catch(e) {
-    console.warn('pre-flight balance check failed:', e.message);
+  }catch(e){
+    document.getElementById('wMON').textContent = '— (RPC error)';
   }
+  document.getElementById('wBASE').textContent = '— (Monad chain)';
+  document.getElementById('wBASE').className = 'wval warn';
+}
+
+// ═══════════════════════════════════════════════════════
+//  BALANCES (EVM)
+// ═══════════════════════════════════════════════════════
+async function loadBal(){
+  if(!addr||walletMode!=='evm') return;
+  const p=rpc();
+  let mon=ethers.BigNumber.from(0);
+  try{ mon=await p.getBalance(addr); }catch(e){}
+  let base=ethers.BigNumber.from(0), ok=false;
+  try{ base=await ct().balanceOf(addr); ok=true; }catch(e){}
+  document.getElementById('wAddr').textContent=addr.slice(0,10)+'...'+addr.slice(-6);
+  document.getElementById('wMON').textContent=parseFloat(ethers.utils.formatEther(mon)).toFixed(4)+' MON';
+  const bEl=document.getElementById('wBASE');
+  bEl.textContent=ok ? parseFloat(ethers.utils.formatEther(base)).toFixed(4)+' BASE' : '0.0000 (read error)';
+  bEl.className='wval '+(ok?'g':'warn');
+}
+
+// ═══════════════════════════════════════════════════════
+//  PRE-FLIGHT & TX ERROR
+// ═══════════════════════════════════════════════════════
+async function preflight(wei){
+  try{
+    const bal=await ct().balanceOf(addr);
+    if(bal.lt(wei)){ const h=parseFloat(ethers.utils.formatEther(bal)).toFixed(4),n=parseFloat(ethers.utils.formatEther(wei)).toFixed(4); return `Insufficient BASE: have ${h}, need ${n}`; }
+  }catch(e){}
   return null;
 }
 
-// ── TX ERROR HELPER ──
-function txError(e) {
-  if(e.code === 4001 || e.code === 'ACTION_REJECTED') return 'Transaction rejected';
-  if(e.code === -32000 || (e.message && e.message.includes('insufficient funds')))
-    return 'Insufficient MON for gas';
-  return e.reason || e.message || 'Transaction failed';
+function txErr(e){
+  if(e.code===4001||e.code==='ACTION_REJECTED') return 'Transaction rejected';
+  if(e.code===-32000||(e.message&&e.message.includes('insufficient funds'))) return 'Insufficient MON for gas';
+  return e.reason||e.message||'Transaction failed';
 }
 
-// ─────────────────────────────────────────────────────────────
-// ACTIONS — all use sendRawTx + waitForReceipt to completely
-// bypass ethers' transactionResponse formatter (the crash source)
-// ─────────────────────────────────────────────────────────────
-
-async function doDeposit() {
-  const v = document.getElementById('depAmt').value;
-  if(!v || parseFloat(v) <= 0) return msg('depMsg','Enter a valid amount','err');
-
-  let valueWei;
-  try { valueWei = ethers.utils.parseEther(v); }
-  catch(e) { return msg('depMsg','Invalid amount','err'); }
-
-  const data = iface.encodeFunctionData('deposit', []);
-  const valueHex = valueWei.toHexString();
-
-  let txHash;
-  try {
-    msg('depMsg','Waiting for approval...','wait');
-    txHash = await sendRawTx(CA, data, valueHex);
-  } catch(e) {
-    return msg('depMsg', txError(e), 'err');
+// Guard: NEAR wallets can't sign Monad txs
+function nearGuard(msgId){
+  if(walletMode==='near'){
+    setMsg(msgId,'NEAR wallets cannot sign Monad transactions. Use an EVM wallet.','err');
+    return true;
   }
-
-  try {
-    msg('depMsg','Confirming...','wait');
-    const receipt = await waitForReceipt(txHash);
-    if(receipt.status === 0) throw new Error('Transaction reverted on-chain');
-    msg('depMsg','Deposit successful! ✓','ok');
-    await loadBal();
-    document.getElementById('depAmt').value = '';
-  } catch(e) {
-    msg('depMsg', e.message || 'Transaction failed', 'err');
-  }
+  return false;
 }
 
-async function doWithdraw() {
-  const v = document.getElementById('wdAmt').value;
-  if(!v || parseFloat(v) <= 0) return msg('wdMsg','Enter a valid amount','err');
-
-  let amtWei;
-  try { amtWei = ethers.utils.parseEther(v); }
-  catch(e) { return msg('wdMsg','Invalid amount','err'); }
-
-  const balErr = await checkBaseBalance(amtWei);
-  if(balErr) return msg('wdMsg', balErr, 'err');
-
-  const data = iface.encodeFunctionData('withdraw', [amtWei]);
-
-  let txHash;
-  try {
-    msg('wdMsg','Waiting for approval...','wait');
-    txHash = await sendRawTx(CA, data, null);
-  } catch(e) {
-    return msg('wdMsg', txError(e), 'err');
-  }
-
-  try {
-    msg('wdMsg','Confirming...','wait');
-    const receipt = await waitForReceipt(txHash);
-    if(receipt.status === 0) throw new Error('Transaction reverted on-chain');
-    msg('wdMsg','Withdrawal successful! ✓','ok');
-    await loadBal();
-    document.getElementById('wdAmt').value = '';
-  } catch(e) {
-    msg('wdMsg', e.message || 'Transaction failed', 'err');
-  }
+// ═══════════════════════════════════════════════════════
+//  CONTRACT ACTIONS
+// ═══════════════════════════════════════════════════════
+async function doDeposit(){
+  if(nearGuard('depMsg')) return;
+  const v=document.getElementById('depAmt').value;
+  if(!v||parseFloat(v)<=0) return setMsg('depMsg','Enter a valid amount','err');
+  let wei; try{ wei=ethers.utils.parseEther(v); }catch(e){ return setMsg('depMsg','Invalid amount','err'); }
+  let hash;
+  try{ setMsg('depMsg','Waiting for approval…','wait'); hash=await rawTx(CA, iface.encodeFunctionData('deposit',[]), wei.toHexString()); }
+  catch(e){ return setMsg('depMsg',txErr(e),'err'); }
+  try{ setMsg('depMsg','Confirming…','wait'); const r=await waitReceipt(hash); if(r.status===0) throw new Error('Reverted on-chain'); setMsg('depMsg','Deposit successful! ✓','ok'); await loadBal(); document.getElementById('depAmt').value=''; }
+  catch(e){ setMsg('depMsg',e.message||'Failed','err'); }
 }
 
-async function doTransfer() {
-  const to  = document.getElementById('trTo').value.trim();
-  const v   = document.getElementById('trAmt').value;
-  if(!to || !v) return msg('trMsg','Fill in all fields','err');
-  if(!ethers.utils.isAddress(to)) return msg('trMsg','Invalid address','err');
-  if(parseFloat(v) <= 0) return msg('trMsg','Enter a valid amount','err');
-
-  let amtWei;
-  try { amtWei = ethers.utils.parseEther(v); }
-  catch(e) { return msg('trMsg','Invalid amount','err'); }
-
-  const balErr = await checkBaseBalance(amtWei);
-  if(balErr) return msg('trMsg', balErr, 'err');
-
-  const data = iface.encodeFunctionData('transfer', [to, amtWei]);
-
-  let txHash;
-  try {
-    msg('trMsg','Waiting for approval...','wait');
-    txHash = await sendRawTx(CA, data, null);
-  } catch(e) {
-    return msg('trMsg', txError(e), 'err');
-  }
-
-  try {
-    msg('trMsg','Confirming...','wait');
-    const receipt = await waitForReceipt(txHash);
-    if(receipt.status === 0) throw new Error('Transaction reverted on-chain');
-    msg('trMsg','Transfer successful! ✓','ok');
-    await loadBal();
-    document.getElementById('trTo').value = '';
-    document.getElementById('trAmt').value = '';
-  } catch(e) {
-    msg('trMsg', e.message || 'Transaction failed', 'err');
-  }
+async function doWithdraw(){
+  if(nearGuard('wdMsg')) return;
+  const v=document.getElementById('wdAmt').value;
+  if(!v||parseFloat(v)<=0) return setMsg('wdMsg','Enter a valid amount','err');
+  let wei; try{ wei=ethers.utils.parseEther(v); }catch(e){ return setMsg('wdMsg','Invalid amount','err'); }
+  const err=await preflight(wei); if(err) return setMsg('wdMsg',err,'err');
+  let hash;
+  try{ setMsg('wdMsg','Waiting for approval…','wait'); hash=await rawTx(CA, iface.encodeFunctionData('withdraw',[wei]), null); }
+  catch(e){ return setMsg('wdMsg',txErr(e),'err'); }
+  try{ setMsg('wdMsg','Confirming…','wait'); const r=await waitReceipt(hash); if(r.status===0) throw new Error('Reverted on-chain'); setMsg('wdMsg','Withdrawal successful! ✓','ok'); await loadBal(); document.getElementById('wdAmt').value=''; }
+  catch(e){ setMsg('wdMsg',e.message||'Failed','err'); }
 }
+
+async function doTransfer(){
+  if(nearGuard('trMsg')) return;
+  const to=document.getElementById('trTo').value.trim(), v=document.getElementById('trAmt').value;
+  if(!to||!v) return setMsg('trMsg','Fill in all fields','err');
+  if(!ethers.utils.isAddress(to)) return setMsg('trMsg','Invalid address','err');
+  if(parseFloat(v)<=0) return setMsg('trMsg','Enter a valid amount','err');
+  let wei; try{ wei=ethers.utils.parseEther(v); }catch(e){ return setMsg('trMsg','Invalid amount','err'); }
+  const err=await preflight(wei); if(err) return setMsg('trMsg',err,'err');
+  let hash;
+  try{ setMsg('trMsg','Waiting for approval…','wait'); hash=await rawTx(CA, iface.encodeFunctionData('transfer',[to,wei]), null); }
+  catch(e){ return setMsg('trMsg',txErr(e),'err'); }
+  try{ setMsg('trMsg','Confirming…','wait'); const r=await waitReceipt(hash); if(r.status===0) throw new Error('Reverted on-chain'); setMsg('trMsg','Transfer successful! ✓','ok'); await loadBal(); document.getElementById('trTo').value=''; document.getElementById('trAmt').value=''; }
+  catch(e){ setMsg('trMsg',e.message||'Failed','err'); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+checkNearCb();
 </script>
 </body>
 </html>
